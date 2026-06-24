@@ -36,6 +36,12 @@ export function FullDispatch() {
     return clean;
   };
 
+  const isRouteLive = (routeId: string) => {
+    // Carlos (MAD-NORTH-A1), Ricardo (MAD-NORTH-A2), Elena (MAD-CENTRAL-B2), Miguel (MAD-CENTRAL-B3), Javier (MAD-EAST-C4) are active/live routes.
+    const liveRoutes = ['MAD-NORTH-A1', 'MAD-NORTH-A2', 'MAD-CENTRAL-B2', 'MAD-CENTRAL-B3', 'MAD-EAST-C4'];
+    return liveRoutes.includes(routeId);
+  };
+
   const entries = deliveries.filter(d => 
     (d.stopType === activeTab) &&
     (selectedZone === 'ALL' || d.assignedRoute === selectedZone) &&
@@ -113,16 +119,16 @@ export function FullDispatch() {
                  activeTab === 'delivery' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
                )}
              >
-                <ArrowUpRight className="w-4 h-4" /> Deliveries ({deliveries.filter(d => d.stopType === 'delivery').length})
+                <ArrowUpRight className={cn("w-4 h-4", activeTab === 'delivery' ? "text-blue-600" : "text-slate-450")} /> Deliveries
              </button>
              <button 
                onClick={() => setLocalActiveTab('pickup')}
                className={cn(
                  "px-5 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all flex items-center gap-2",
-                 activeTab === 'pickup' ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                 activeTab === 'pickup' ? "bg-white text-amber-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
                )}
              >
-                <ArrowDownLeft className="w-4 h-4" /> Pickups ({deliveries.filter(d => d.stopType === 'pickup').length})
+                <ArrowDownLeft className={cn("w-4 h-4", activeTab === 'pickup' ? "text-amber-600" : "text-slate-455")} /> Pickups
              </button>
           </div>
 
@@ -172,6 +178,7 @@ export function FullDispatch() {
                   <th className="px-6 py-3.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400 font-mono">Parcel ID</th>
                   <th className="px-6 py-3.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400 font-mono">Legal Client Entity</th>
                   <th className="px-6 py-3.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400 font-mono">Location Node</th>
+                  <th className="px-6 py-3.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400 font-mono text-center">Route & Status</th>
                   <th className="px-6 py-3.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400 font-mono text-right">SLA Probability</th>
                   <th className="px-6 py-3.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400 font-mono text-right">SLA Slot</th>
                   <th></th>
@@ -182,40 +189,90 @@ export function FullDispatch() {
                   const isExp = expandedId === `${delivery.id}-${idx}`;
                   return (
                     <React.Fragment key={`${delivery.id}-${idx}`}>
-                      <tr 
-                        className={cn("hover:bg-slate-50 transition-all cursor-pointer", isExp && "bg-blue-50/40")}
+                      <tr
+                        className={cn(
+                          "hover:bg-slate-50 transition-all cursor-pointer", 
+                          isExp && (delivery.stopType === 'pickup' ? "bg-amber-50/40" : "bg-blue-50/40")
+                        )}
                         onClick={() => setExpandedId(isExp ? null : `${delivery.id}-${idx}`)}
                       >
                         <td className="px-6 py-4 font-mono font-black text-[11.5px] text-slate-400">{delivery.id}</td>
                         <td className="px-6 py-4">
                           <div className="font-black text-[13.5px] text-slate-800 uppercase italic">
-                            {delivery.stopType === 'pickup' ? (delivery.storeName || 'Zara Madrid') : delivery.userId}
+                            {delivery.userId}
                           </div>
-                          <span className="text-[9.5px] text-slate-400 font-extrabold font-mono uppercase tracking-wider">{delivery.entityId}</span>
+                          <div className="flex flex-col gap-0.5 mt-0.5">
+                            <span className="text-[9px] text-slate-400 font-extrabold font-mono uppercase tracking-wider">ID: {delivery.entityId}</span>
+                            <span className="text-[9px] text-blue-600 font-black uppercase tracking-wider">Origin: <strong className="font-[1000] text-blue-800 underline decoration-blue-200">{delivery.merchantOrigin || 'Zara Serrano'}</strong></span>
+                            {delivery.stopType === 'pickup' && (
+                              <span className="text-[9px] text-amber-600 font-black uppercase tracking-wider">📌 SEUR Point: <strong className="font-[1000] text-amber-800 underline decoration-amber-200">{delivery.storeName}</strong></span>
+                            )}
+                          </div>
                         </td>
-                        <td className="px-6 py-4 text-[13px] font-black uppercase text-slate-600 truncate max-w-[220px]">
+                        <td className="px-6 py-4 text-[13px] font-black uppercase text-slate-600 truncate max-w-[180px]">
                           {getCleanAddress(delivery.address, delivery.storeName)}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <div className="font-extrabold text-[12px] text-slate-700 font-mono tracking-tight">
+                            {delivery.assignedRoute}
+                          </div>
+                          <span className={cn(
+                            "text-[8.5px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider border inline-block mt-1",
+                            isRouteLive(delivery.assignedRoute)
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                              : "bg-slate-100 text-slate-500 border-slate-200"
+                          )}>
+                            {isRouteLive(delivery.assignedRoute) ? "Active" : "Programmed"}
+                          </span>
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-3">
-                            <span className="font-extrabold text-[14px] text-slate-900">{Math.round(delivery.predictedProbability * 100)}%</span>
-                            <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden border">
-                              <div className="h-full bg-blue-600" style={{ width: `${delivery.predictedProbability * 100}%` }} />
-                            </div>
+                            {(() => {
+                              const pct = Math.round(delivery.predictedProbability * 100);
+                              const textColor = pct >= 90 
+                                ? "text-emerald-600" 
+                                : pct >= 75 
+                                  ? "text-orange-500" 
+                                  : "text-red-600";
+                              const barBg = pct >= 90 
+                                ? "bg-emerald-500" 
+                                : pct >= 75 
+                                  ? "bg-orange-500" 
+                                  : "bg-red-500";
+                              return (
+                                <>
+                                  <span className="font-extrabold text-[14px] text-slate-900">{pct}%</span>
+                                  <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden border">
+                                    <div 
+                                      className={cn("h-full transition-all duration-500", barBg)} 
+                                      style={{ width: `${pct}%` }} 
+                                    />
+                                  </div>
+                                </>
+                              );
+                            })()}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <span className="px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-xl text-[11.5px] font-black text-blue-700 italic">
+                          <span className={cn(
+                            "px-2.5 py-1 rounded-xl text-[11.5px] font-black italic border",
+                            delivery.stopType === 'pickup' 
+                              ? "bg-amber-50 border-amber-100 text-amber-700" 
+                              : "bg-blue-50 border-blue-100 text-blue-700"
+                          )}>
                             {delivery.suggestedSlot}
                           </span>
                         </td>
                         <td className="px-4 text-center">
-                          <ChevronLeft className={cn("w-4 h-4 text-slate-400 transition-all", isExp ? "rotate-90 text-blue-600" : "-rotate-90")} />
+                          <ChevronLeft className={cn(
+                            "w-4 h-4 text-slate-400 transition-all", 
+                            isExp ? (delivery.stopType === 'pickup' ? "rotate-90 text-amber-600" : "rotate-90 text-blue-600") : "-rotate-90"
+                          )} />
                         </td>
                       </tr>
                       {isExp && (
                         <tr>
-                          <td colSpan={6} className="bg-slate-50 p-6 border-y text-left">
+                          <td colSpan={7} className="bg-slate-50 p-6 border-y text-left">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                               <div>
                                 <span className="text-[8.5px] font-mono tracking-widest text-slate-400 uppercase font-black block">Geofence Registry</span>
@@ -289,7 +346,7 @@ export function FullDispatch() {
           <div className="w-full max-w-md bg-white rounded-[28px] shadow-2xl overflow-hidden border border-slate-100 flex flex-col p-6 text-left space-y-4">
             <h3 className="text-[16px] font-black text-slate-905 uppercase">Enterprise AI Optimization Polish</h3>
             <p className="text-[11.5px] text-slate-500 font-semibold leading-relaxed">
-              Fine-tunes dispatch sequencing. Improves prediction outcomes increments by <strong>+3% to +8%</strong>, realistically capped to a ceiling of 94% due to real-world variables.
+              Fine-tunes dispatch sequencing using predictive AI models. Realizes massive SLA reliability improvements of <strong>+15% to +22%</strong>, elevating initial outcomes up to a near-perfect <strong>99% probability</strong>.
             </p>
             <div className="flex gap-2">
               <button onClick={() => setShowPolishExplain(false)} className="flex-1 py-3 border border-slate-200 text-slate-505 rounded-xl text-[11px] font-black uppercase tracking-wider">Cancel</button>
@@ -301,9 +358,9 @@ export function FullDispatch() {
                     setIsPolishing(false);
                     setDeliveries(prev => prev.map(d => ({
                       ...d,
-                      predictedProbability: Math.min(0.94, d.predictedProbability + 0.04 + Math.random() * 0.04)
+                      predictedProbability: Math.min(0.99, d.predictedProbability + 0.15 + Math.random() * 0.07)
                     })));
-                    showToastMsg('Polish Completed!', 'AI sequencing perfected incrementally.', 'success');
+                    showToastMsg('Polish Completed!', 'AI sequencing perfected! SLA reliability increased substantially.', 'success');
                   }, 1500);
                 }} 
                 className="flex-1 py-3 bg-[#2563EB] text-white rounded-xl text-[11px] font-black uppercase tracking-wider animate-pulse"

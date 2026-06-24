@@ -1,4 +1,4 @@
-export type DeliveryStatus = 'pending' | 'delivered' | 'failed' | 'not-home' | 'delayed' | 'access-issue' | 'redirected' | 'wrong-address' | 'access-denied';
+export type DeliveryStatus = 'pending' | 'delivered' | 'failed' | 'not-home' | 'delayed' | 'access-issue' | 'redirected' | 'wrong-address' | 'access-denied' | 'person-not-home' | 'address-incomplete' | 'blocked-entry' | 'unresponsive-intercom' | 'refused-damaged';
 export type StopType = 'delivery' | 'pickup' | 'completed' | 'failed';
 export type TruckRole = 'delivery' | 'pickup';
 
@@ -19,6 +19,7 @@ export interface Delivery {
   stopType?: StopType;
   historyCount?: number; // Number of historical orders this prediction is based on
   storeName?: string;
+  merchantOrigin?: string;
   entityId?: string; // DNI for customers, CIF or StoreID for retailers
 }
 

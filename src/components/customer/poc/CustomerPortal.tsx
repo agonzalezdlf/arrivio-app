@@ -6,57 +6,48 @@ import {
 import { SIMULATION_PERSONAS } from '../CustomerSimulator';
 
 export function POCCustomer() {
-  const [personaKey, setPersonaKey] = useState<string>('elena');
-  const activePersona = SIMULATION_PERSONAS[personaKey];
+  // Static preconfigured customer profile representing the active recipient for showcase
+  const customerName = 'Alex Gonzalez';
+  const customerPhone = '+34 600 123 456';
+  const customerAddress = 'Calle de Gran Vía 28, 3ºA';
+  const customerItem = 'Chanel Luxury Cosmetics';
+
+  const activePersona = {
+    id: 'POC-YOU-MAD',
+    name: customerName,
+    phone: customerPhone,
+    address: customerAddress,
+    item: customerItem,
+  };
 
   const [simState, setSimState] = useState<'notified' | 'portal' | 'success'>('notified');
   const [selectedDay, setSelectedDay] = useState('Tomorrow');
-  const [selectedSlot, setSelectedSlot] = useState('Afternoon');
+  const [selectedSlot, setSelectedSlot] = useState('Afternoon (15-18)');
 
   const confirmChoice = () => {
     setSimState('success');
   };
 
   return (
-    <div className="flex-1 bg-slate-50 p-4 md:p-8 text-left">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+    <div className="flex-1 bg-slate-50 p-4 md:p-8 flex flex-col items-center justify-center text-left min-h-[calc(100vh-64px)]">
+      <div className="w-full max-w-sm flex flex-col space-y-5">
         
-        {/* Persona Select sidebar */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white rounded-[24px] border border-slate-200 p-6 shadow-sm">
-            <span className="text-[10px] uppercase font-black tracking-widest text-[#2563EB] font-mono">End-User Setup</span>
-            <h3 className="text-[17px] font-black leading-none mt-1">Select Persona</h3>
-            <p className="text-[11px] text-slate-500 font-semibold mt-1">
-              Select which customer profile to run the POC SMS webhook simulator for:
-            </p>
-
-            <div className="space-y-2 mt-4">
-              {Object.entries(SIMULATION_PERSONAS).map(([key, item]) => (
-                <button
-                  key={key}
-                  onClick={() => {
-                    setPersonaKey(key);
-                    setSimState('notified');
-                  }}
-                  className={`w-full p-3.5 rounded-xl border text-left transition-all ${
-                    personaKey === key 
-                      ? "bg-slate-900 border-slate-900 text-white" 
-                      : "bg-white border-slate-200 text-slate-800 hover:bg-slate-50 cursor-pointer"
-                  }`}
-                >
-                  <h5 className="text-[12.5px] font-bold leading-none">{(item as any).name}</h5>
-                  <p className="text-[10px] text-slate-400 mt-1">{(item as any).roleDescription}</p>
-                </button>
-              ))}
-            </div>
-          </div>
+        {/* Showcase Header */}
+        <div className="text-center space-y-1.5 select-none">
+          <span className="text-[9.5px] bg-blue-50 border border-blue-100 text-blue-700 font-extrabold px-2.5 py-1 rounded-full uppercase tracking-widest font-mono inline-block">
+            POC Touchpoint Simulator
+          </span>
+          <h2 className="text-[18px] font-black text-slate-900 tracking-tight leading-none">End-Customer Sync Flow</h2>
+          <p className="text-[11.5px] text-slate-500 max-w-xs mx-auto leading-normal">
+            Experience when they get the notification, how they enter availability, and locking preferences into SEUR Madrid's queue.
+          </p>
         </div>
 
         {/* Mobile simulator */}
-        <div className="lg:col-span-7 flex flex-col items-center justify-center">
-          <div className="w-full max-w-sm aspect-[1/2.05] bg-slate-950 md:border-[10px] border-slate-900 rounded-[38px] shadow-2xl relative overflow-hidden flex flex-col pointer-events-auto">
+        <div className="w-full flex flex-col items-center justify-center">
+          <div className="w-full aspect-[1/2.05] bg-slate-950 md:border-[10px] border-slate-900 rounded-[38px] shadow-2xl relative overflow-hidden flex flex-col pointer-events-auto">
             
-            <div className="flex-1 bg-white relative flex flex-col overflow-hidden pt-6 pb-2 text-left">
+            <div className="flex-1 bg-white relative flex flex-col overflow-hidden pt-6 pb-2 text-left min-h-0">
               
               {simState === 'notified' && (
                 <div className="flex-1 flex flex-col justify-between p-4 bg-slate-900 text-white animate-fade-in">
@@ -72,10 +63,10 @@ export function POCCustomer() {
                       <span>Just Now</span>
                     </div>
                     <p className="text-[11px] leading-normal text-slate-200 font-semibold">
-                      Hola {activePersona.name}! Your order <strong>#{activePersona.id}</strong> is ready for load assignment.
+                      Hola {activePersona.name}! Your order tracking is now available. Please enter your weekly availability matrix to ensure successful first-time deliveries!
                     </p>
                     <p className="text-[11px] leading-normal text-slate-400 italic font-semibold">
-                      Tap our web link to select your preferred arrival days to bypass logistics delays.
+                      Tap our web link to enter your global weekly availability preferences.
                     </p>
                     <div className="p-2 bg-blue-950 border border-blue-900 rounded-xl text-[10.5px] font-mono text-blue-300 flex justify-between items-center">
                       <span>seur.madrid/sync-node</span>
@@ -106,7 +97,7 @@ export function POCCustomer() {
                     <div className="space-y-1">
                       <h4 className="text-[13px] font-black text-slate-900 uppercase">POC Availability Switch</h4>
                       <p className="text-[10px] text-slate-500 leading-normal">
-                        Select your presence so we can optimize courier route stops automatically!
+                        Select your regular weekly home presence. We save this matrix globally to optimize all future pedidos and guarantee first-time delivery success.
                       </p>
                     </div>
 
@@ -190,9 +181,9 @@ export function POCCustomer() {
                     onClick={() => {
                       setSimState('notified');
                     }}
-                    className="text-[9.5px] uppercase font-black text-slate-400 hover:text-white underline decoration-dotted tracking-wider cursor-pointer"
+                    className="text-[9.5px] uppercase font-black text-slate-400 hover:text-white underline decoration-dotted tracking-wider cursor-pointer bg-transparent border-0"
                   >
-                    ← Simulated Another Scenario
+                    ← Simulate Again
                   </button>
                 </div>
               )}

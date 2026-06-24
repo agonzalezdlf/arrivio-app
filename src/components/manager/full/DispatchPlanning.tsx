@@ -256,19 +256,22 @@ export function BulkPlanner({
                             "text-[15px] font-[900] tracking-tighter uppercase italic leading-none",
                             expandedId === `${delivery.id}-${idx}` ? "text-blue-600" : "text-slate-800"
                           )}>
-                            {delivery.stopType === 'pickup' ? (delivery.storeName || 'Zara Serrano') : (delivery.entityId || 'ID-PENDING')}
+                            {delivery.userId || 'Customer Recipient'}
                           </span>
                           <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-0.5">
-                             {delivery.stopType === 'pickup' ? (delivery.entityId || 'CIF-PENDING') : (delivery.userId || 'Individual')}
+                             {delivery.entityId || 'NIF-PENDING'}
                           </span>
                         </div>
                       </td>
                       <td className="px-8 py-5">
                         <div className="flex flex-col truncate max-w-full">
                           <span className="text-[14px] font-black text-slate-800 uppercase italic tracking-tight">{getCleanAddress(delivery.address, delivery.storeName)}</span>
+                           <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest mt-1">
+                             Origin: <strong className="font-[1000] text-blue-800 underline decoration-blue-300">{delivery.merchantOrigin || 'Zara Serrano'}</strong>
+                           </span>
                            {delivery.stopType === 'pickup' && (
-                             <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest mt-1">
-                               {delivery.storeName?.toLowerCase() || 'zara serrano'}
+                             <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest mt-0.5">
+                               📌 SEUR Point: <strong className="font-[1000] text-amber-800 underline decoration-amber-300">{delivery.storeName}</strong>
                              </span>
                            )}
                           <div className="flex items-center gap-3 mt-1.5">
@@ -282,16 +285,43 @@ export function BulkPlanner({
                       <td className="px-8 py-5">
                         <div className="flex items-center justify-end gap-5">
                           <div className="flex flex-col items-end">
-                            <span className="text-[18px] font-black text-slate-900 tracking-tighter leading-none mb-1">
-                              {Math.round(delivery.predictedProbability * 100)}%
-                            </span>
-                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-tighter leading-none">Reliability</span>
-                            <span className="text-[9px] text-blue-500 font-extrabold tracking-tight mt-1 whitespace-nowrap leading-none">
-                              based on {delivery.historyCount || 42} orders
-                            </span>
+                            {(() => {
+                              const probPct = Math.round(delivery.predictedProbability * 100);
+                              const probColor = probPct >= 90 
+                                ? "text-emerald-600" 
+                                : probPct >= 75 
+                                  ? "text-orange-500" 
+                                  : "text-red-600";
+                              const probBg = probPct >= 90 
+                                ? "bg-emerald-500" 
+                                : probPct >= 75 
+                                  ? "bg-orange-500" 
+                                  : "bg-red-500";
+                              return (
+                                <>
+                                  <span className="text-[18px] font-black text-slate-900 tracking-tighter leading-none mb-1">
+                                    {probPct}%
+                                  </span>
+                                  <span className="text-[9px] text-slate-400 font-black uppercase tracking-tighter leading-none">Reliability</span>
+                                  <span className="text-[9px] text-blue-500 font-extrabold tracking-tight mt-1 whitespace-nowrap leading-none">
+                                    based on {delivery.historyCount || 42} orders
+                                  </span>
+                                </>
+                              );
+                            })()}
                           </div>
                           <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200/50 shadow-inner">
-                            <div className={cn("h-full transition-all duration-1000 shadow-sm", delivery.predictedProbability > 0.8 ? "bg-emerald-500" : "bg-amber-500")} style={{ width: `${delivery.predictedProbability * 100}%` }} />
+                            {(() => {
+                              const probPct = Math.round(delivery.predictedProbability * 100);
+                              const probBg = probPct >= 90 
+                                ? "bg-emerald-500" 
+                                : probPct >= 75 
+                                  ? "bg-orange-500" 
+                                  : "bg-red-500";
+                              return (
+                                <div className={cn("h-full transition-all duration-1000 shadow-sm", probBg)} style={{ width: `${probPct}%` }} />
+                              );
+                            })()}
                           </div>
                         </div>
                       </td>
@@ -321,18 +351,18 @@ export function BulkPlanner({
                                        <div className="space-y-3 pt-2">
                                           <div>
                                              <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">
-                                                {delivery.stopType === 'pickup' ? 'Merchant Brand Name' : 'Entity ID'}
+                                                Merchant Origin
                                              </div>
                                              <div className="text-[16px] font-black text-blue-600 tracking-tighter italic">
-                                                {delivery.stopType === 'pickup' ? (delivery.storeName || 'Primary Store') : delivery.entityId}
+                                                {delivery.merchantOrigin || 'Zara Serrano'}
                                              </div>
                                           </div>
                                           <div>
                                              <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">
-                                                {delivery.stopType === 'pickup' ? 'Legal Registration Tax ID' : 'Associated Name'}
+                                                Final Customer Recipient
                                              </div>
                                              <div className="text-[14px] font-black text-slate-900 tracking-tighter">
-                                                {delivery.stopType === 'pickup' ? delivery.entityId : delivery.userId} 
+                                                {delivery.userId || 'Elena Ruiz'} 
                                              </div>
                                           </div>
                                           <div>

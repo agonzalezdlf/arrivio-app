@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Smartphone, Bell, Calendar, Clock, Check, RefreshCw, 
   BrainCircuit, ArrowRight, ShieldCheck, Sparkles, CheckCircle, 
-  MapPin, Send, User, ChevronRight, Info, Award
+  MapPin, Send, User, ChevronRight, Info, Award, Home, Users
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
@@ -82,90 +82,57 @@ export function getCellDetails(personaKey: string, day: string, hourSlot: string
   const d = day.toUpperCase();
   const isWeekend = d === 'SUN' || d === 'SAT';
 
-  if (personaKey === 'elena') {
-    if (isWeekend) {
+  if (isWeekend) {
+    return {
+      level: 'low' as const,
+      prob: 15,
+      reason: 'Reduced weekend fleet operations in the neighborhood.'
+    };
+  } else {
+    if (hourSlot.includes('12 PM') || hourSlot.includes('1 PM') || hourSlot.includes('4 PM') || hourSlot.includes('5 PM')) {
       return {
         level: 'optimal' as const,
-        prob: 98,
-        reason: 'Weekend. Fully present at residential address.'
+        prob: 96,
+        reason: 'Peak dispatch density. Carrier fleet proximity is at its maximum.'
+      };
+    } else if (hourSlot.includes('9 AM') || hourSlot.includes('10 AM') || hourSlot.includes('2 PM') || hourSlot.includes('3 PM')) {
+      return {
+        level: 'moderate' as const,
+        prob: 75,
+        reason: 'Standard corridor service window. Balanced fleet capacity.'
       };
     } else {
-      if (hourSlot.includes('4 PM') || hourSlot.includes('5 PM')) {
-        return {
-          level: 'optimal' as const,
-          prob: 95,
-          reason: 'Post-office evening hours. Confirmed home presence.'
-        };
-      } else if (hourSlot.includes('12 PM') || hourSlot.includes('1 PM') || hourSlot.includes('2 PM') || hourSlot.includes('3 PM')) {
-        return {
-          level: 'moderate' as const,
-          prob: 60,
-          reason: 'Midday hybrid slot. Intermittent home-office presence.'
-        };
-      } else {
-        return {
-          level: 'low' as const,
-          prob: 25,
-          reason: 'Away at office headquarters in Chamartín.'
-        };
-      }
-    }
-  } else if (personaKey === 'carlos') {
-    if (isWeekend) {
       return {
         level: 'low' as const,
-        prob: 5,
-        reason: 'Corporate offices closed for weekends.'
+        prob: 30,
+        reason: 'Off-peak slot. Requires manual route divergence for dispatcher.'
       };
-    } else {
-      if (hourSlot.includes('5 PM') || hourSlot.includes('8 AM')) {
-        return {
-          level: 'moderate' as const,
-          prob: 65,
-          reason: 'Office closing hours or breakfast operations window.'
-        };
-      } else {
-        return {
-          level: 'optimal' as const,
-          prob: 99,
-          reason: 'Standard office hours. Reception desk open.'
-        };
-      }
-    }
-  } else {
-    if (d === 'SUN') {
-      return {
-        level: 'low' as const,
-        prob: 5,
-        reason: 'Atocha pedestrian boutique is closed on Sundays.'
-      };
-    } else {
-      if (hourSlot.includes('12 PM') || hourSlot.includes('1 PM') || hourSlot.includes('2 PM') || hourSlot.includes('3 PM')) {
-        return {
-          level: 'optimal' as const,
-          prob: 94,
-          reason: 'Approved commercial transit and loading zone window active.'
-        };
-      } else if (hourSlot.includes('8 AM') || hourSlot.includes('9 AM') || hourSlot.includes('10 AM') || hourSlot.includes('11 AM')) {
-        return {
-          level: 'low' as const,
-          prob: 30,
-          reason: 'Centro Madrid strict heavy-vehicle commercial transit restrictions apply.'
-        };
-      } else {
-        return {
-          level: 'moderate' as const,
-          prob: 70,
-          reason: 'High pedestrian lane rush. Impeded van access.'
-        };
-      }
     }
   }
 }
 
 export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc' | 'mvp' | 'scale' }) {
-  const [personaKey, setPersonaKey] = useState<string>('elena');
-  const activePersona = SIMULATION_PERSONAS[personaKey] || SIMULATION_PERSONAS.elena;
+  // Preconfigured customer profile representing the active recipient for showcase
+  const customerName = 'Alex Gonzalez';
+  const customerPhone = '+34 600 123 456';
+  const customerAddress = 'Calle de Gran Vía 28, 3ºA';
+  const customerPostal = '28013 (Centro)';
+  const customerItem = 'Chanel No.5 & Dior Sauvage Luxury Bundle';
+  const customerPrice = '€184.50';
+
+  const activePersona = {
+    id: 'PRM-YOU-MAD',
+    name: customerName,
+    roleDescription: 'Simulated personalized customer profile. Select multiple slots on your matrix.',
+    phone: customerPhone,
+    address: `${customerAddress}, ${customerPostal}`,
+    postal: customerPostal,
+    item: customerItem,
+    store: 'Primor Gran Vía Store',
+    price: customerPrice,
+    initialStopOrder: 7,
+    newStopOrder: 2
+  };
 
   // Simulation steps State flow
   // 'idle' -> 'notified_sms' -> 'customer_portal' -> 'fully_synced'
@@ -173,14 +140,50 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
   const [isSending, setIsSending] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // Selected Day and Hour coordinate
-  const [selectedDay, setSelectedDay] = useState<string>('MON');
-  const [selectedHour, setSelectedHour] = useState<string>('5 PM - 6 PM');
+  // Selected Slots coordinates (supports ticking multiple slots)
+  const [selectedSlots, setSelectedSlots] = useState<string[]>(['MON:5 PM - 6 PM']);
 
-  const activeCellObj = getCellDetails(personaKey, selectedDay, selectedHour);
+  // Alternative fail-safe options states
+  const [failSafeOption, setFailSafeOption] = useState<'retry' | 'neighbor' | 'locker' | 'safe_place'>('retry');
+  const [neighborName, setNeighborName] = useState('');
+  const [neighborFlat, setNeighborFlat] = useState('');
+  const [safePlaceInstructions, setSafePlaceInstructions] = useState('');
+  const [selectedPickupPoint, setSelectedPickupPoint] = useState('SEUR Locker - Plaza de Colón');
+
+  const toggleSlot = (day: string, hour: string) => {
+    const key = `${day}:${hour}`;
+    setSelectedSlots(prev => {
+      if (prev.includes(key)) {
+        return prev.filter(s => s !== key);
+      } else {
+        return [...prev, key];
+      }
+    });
+  };
+
+  // Aggregated details based on selected slots
+  const selectedDetails = selectedSlots.map(slot => {
+    const [d, h] = slot.split(':');
+    return getCellDetails('you', d, h);
+  });
+
+  const avgProb = selectedSlots.length > 0
+    ? Math.round(selectedDetails.reduce((acc, curr) => acc + curr.prob, 0) / selectedSlots.length)
+    : 0;
+
+  const overallLevel = avgProb >= 85 ? 'optimal' : avgProb >= 60 ? 'moderate' : 'low';
+  const overallReason = selectedSlots.length > 0
+    ? `Combined compatibility score is ${avgProb}% across your ${selectedSlots.length} selected availability slots.`
+    : 'No availability slots ticked. Please select one or more hours on the matrix.';
+
+  const activeCellObj = {
+    level: overallLevel,
+    prob: avgProb,
+    reason: overallReason
+  };
 
   const [simLogs, setSimLogs] = useState<{ time: string; text: string; type: 'info' | 'success' | 'warning' }[]>([
-    { time: '20:41:32', text: 'Persona simulation sandbox initiated.', type: 'info' }
+    { time: '20:41:32', text: 'Personal customer simulation sandbox initiated.', type: 'info' }
   ]);
 
   const addLog = (text: string, type: 'info' | 'success' | 'warning' = 'info') => {
@@ -188,24 +191,13 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
     setSimLogs(prev => [{ time: stamp, text, type }, ...prev]);
   };
 
-  // Reset simulator state when switching personas
+  // Reset simulator state on initial mount
   useEffect(() => {
     setSimState('idle');
-    // Set typical optimal starting cells for each persona
-    if (personaKey === 'elena') {
-      setSelectedDay('MON');
-      setSelectedHour('5 PM - 6 PM');
-    } else if (personaKey === 'carlos') {
-      setSelectedDay('MON');
-      setSelectedHour('10 AM - 11 AM');
-    } else {
-      setSelectedDay('MON');
-      setSelectedHour('12 PM - 1 PM');
-    }
     setSimLogs([
-      { time: new Date().toLocaleTimeString('en-GB', { hour12: false }), text: `Avatar loaded: ${activePersona.name}. Ready for simulation run.`, type: 'info' }
+      { time: new Date().toLocaleTimeString('en-GB', { hour12: false }), text: `Showcase profile ready for ${activePersona.name}. Ready for simulation.`, type: 'info' }
     ]);
-  }, [personaKey]);
+  }, []);
 
   // Handle Dispatch Simulation Trigger
   const triggerSimulation = () => {
@@ -226,21 +218,44 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
   };
 
   const commitSynchronize = () => {
+    if (selectedSlots.length === 0) {
+      addLog('Cannot synchronize with zero slots selected!', 'warning');
+      return;
+    }
     setIsSyncing(true);
-    addLog(`Submitting newly selected client slot preference: ${selectedDay} during ${selectedHour}`, 'info');
+    let failSafeText = '';
+    if (failSafeOption === 'retry') {
+      failSafeText = 'Standard Retry Tomorrow';
+    } else if (failSafeOption === 'neighbor') {
+      failSafeText = `Deliver to Neighbor: ${neighborName || 'Unspecified Name'} at flat ${neighborFlat || 'Unspecified Flat'}`;
+    } else if (failSafeOption === 'locker') {
+      failSafeText = `Drop at Pickup Point: ${selectedPickupPoint}`;
+    } else if (failSafeOption === 'safe_place') {
+      failSafeText = `Leave in Safe Place: ${safePlaceInstructions || 'Unspecified Location'}`;
+    }
+
+    addLog(`Submitting ${selectedSlots.length} client availability slots: ${selectedSlots.map(s => s.replace(':', ' ')).join(', ')}`, 'info');
+    addLog(`Registering fallback delivery instruction: "${failSafeText}"`, 'info');
     
     setTimeout(() => {
       setIsSyncing(false);
       setSimState('fully_synced');
       addLog(`Hermética Neural Solver recalculated courier stops! Staging optimized Stop sequence from Stop #${activePersona.initialStopOrder} down to Stop #${activePersona.newStopOrder}.`, 'success');
-      addLog(`Courier route updated. Carrier ETA reliability logged at ${activeCellObj.prob}% confidence.`, 'success');
+      addLog(`Fallback instruction successfully logged in dispatch router database: "${failSafeText}"`, 'success');
+      addLog(`Courier route updated. Carrier ETA reliability logged at ${avgProb}% confidence across ${selectedSlots.length} synchronized slots.`, 'success');
     }, 1200);
   };
 
   const resetAll = () => {
     setSimState('idle');
+    setSelectedSlots(['MON:5 PM - 6 PM']);
+    setFailSafeOption('retry');
+    setNeighborName('');
+    setNeighborFlat('');
+    setSafePlaceInstructions('');
+    setSelectedPickupPoint('SEUR Locker - Plaza de Colón');
     setSimLogs([
-      { time: new Date().toLocaleTimeString('en-GB', { hour12: false }), text: 'Simulation reset complete. Select a persona to test the flow.', type: 'info' }
+      { time: new Date().toLocaleTimeString('en-GB', { hour12: false }), text: 'Simulation reset complete. Configure your profile on the left.', type: 'info' }
     ]);
   };
 
@@ -273,109 +288,167 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
           {/* CONTROL SECTION (LOGISTICS CONSOLE) */}
           <div className="lg:col-span-7 flex flex-col space-y-6">
             
-            {/* Choose Simulation Scenario Persona Panel */}
-            <div className="bg-white rounded-[24px] border border-slate-200 p-6 shadow-sm text-left space-y-4">
+            {/* Interactive Demo Flow Steps */}
+            <div className="bg-white rounded-[24px] border border-slate-200 p-6 shadow-sm text-left space-y-6">
               <div>
-                <span className="text-[10px] font-black text-[#2563EB] uppercase tracking-widest font-mono block">Simulation Setup</span>
-                <h3 className="text-[17px] font-black text-slate-900 tracking-tight mt-1">Choose Your Simulation Persona</h3>
-                <p className="text-[11.5px] text-slate-500 font-medium">
-                  Select a persona profile representing a real customer scenario in Madrid. Each persona features unique scheduling demands and delivery locations.
+                <span className="text-[10px] font-black text-[#2563EB] uppercase tracking-widest font-mono block">Showcase Walkthrough</span>
+                <h3 className="text-[18px] font-black text-slate-900 tracking-tight mt-1">Availability Sync Experience</h3>
+                <p className="text-[12px] text-slate-500 font-medium leading-relaxed mt-1">
+                  Experience how the end-customer interacts with Arrivio from the moment they receive their dispatch notification to locking their matrix availability.
                 </p>
               </div>
 
-              {/* Persona Chooser Items */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                {(Object.keys(SIMULATION_PERSONAS) as Array<keyof typeof SIMULATION_PERSONAS>).map((key) => {
-                  const item = SIMULATION_PERSONAS[key];
-                  const isSel = personaKey === key;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => setPersonaKey(key)}
-                      disabled={simState !== 'idle'}
-                      className={cn(
-                        "p-4 rounded-2xl border text-left transition-all flex flex-col justify-between h-40",
-                        isSel 
-                          ? "bg-slate-900 border-slate-900 shadow-md transform text-white scale-[1.01]" 
-                          : "bg-white border-slate-200 hover:border-slate-350 cursor-pointer disabled:opacity-50 text-slate-800"
-                      )}
-                    >
-                      <div className="space-y-1">
-                        <span className={cn(
-                          "text-[8px] font-mono uppercase font-black px-1.5 py-0.5 rounded tracking-widest block w-fit",
-                          isSel ? "bg-white/10 text-blue-300" : "bg-slate-100 text-slate-500"
-                        )}>
-                          MAD-NODE
-                        </span>
-                        <h4 className="text-[12.5px] font-black leading-tight mt-1 truncate">{item.name}</h4>
-                        <p className={cn("text-[9.5px] line-clamp-2 leading-snug", isSel ? "text-slate-350" : "text-slate-500")}>
-                          {item.roleDescription}
-                        </p>
+              {/* Progress Steppers */}
+              <div className="space-y-4">
+                
+                {/* STEP 1 */}
+                <div className={cn(
+                  "p-4 rounded-2xl border transition-all duration-300",
+                  simState === 'idle' || simState === 'notified_sms'
+                    ? "bg-blue-50/50 border-blue-200 shadow-xs"
+                    : "bg-slate-50 border-slate-100 opacity-75"
+                )}>
+                  <div className="flex items-start gap-3">
+                    <div className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center text-[10.5px] font-bold font-mono shrink-0",
+                      simState !== 'idle'
+                        ? "bg-emerald-500 text-white"
+                        : "bg-blue-600 text-white"
+                    )}>
+                      {simState !== 'idle' ? "✓" : "1"}
+                    </div>
+                    <div className="space-y-1 flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11.5px] font-extrabold text-slate-800 uppercase tracking-tight">Step 1: SMS Tracking Alert</span>
+                        {simState !== 'idle' && (
+                          <span className="text-[9px] font-bold text-emerald-600 font-mono bg-emerald-50 px-2 py-0.5 rounded-full uppercase">Sent</span>
+                        )}
                       </div>
+                      <p className="text-[10.5px] text-slate-500 font-medium leading-normal">
+                        SEUR logistics system registers the delivery. The customer receives an SMS tracking alert with a link to sync their weekly availability profile, maximizing first-time delivery success.
+                      </p>
 
-                      <div className={cn("pt-2.5 border-t text-[10px] space-y-0.5", isSel ? "border-white/10" : "border-slate-100")}>
-                        <div className="flex justify-between font-mono">
-                          <span className={isSel ? "text-slate-400" : "text-slate-400"}>VALUE:</span>
-                          <span className="font-bold">{item.price}</span>
+                      {simState === 'idle' && (
+                        <div className="pt-2">
+                          <button
+                            onClick={triggerSimulation}
+                            disabled={isSending}
+                            className="h-10 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-5 rounded-xl font-black text-[11px] uppercase tracking-wider transition-all active:scale-97 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                          >
+                            {isSending ? (
+                              <>
+                                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                Triggering SMS...
+                              </>
+                            ) : (
+                              <>
+                                <Send className="w-3.5 h-3.5" />
+                                Simulate Outbound SMS Notification
+                              </>
+                            )}
+                          </button>
                         </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+                      )}
 
-              {/* Quick Trigger Button */}
-              <div className="pt-2">
-                {simState === 'idle' ? (
-                  <button
-                    onClick={triggerSimulation}
-                    disabled={isSending}
-                    className="w-full h-13 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest transition-all active:scale-97 flex items-center justify-center gap-2 cursor-pointer shadow-md"
-                  >
-                    {isSending ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        Generating Notification Code...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        Assign & Trigger SMS Webhook Scenario
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <div className="p-3.5 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-between text-[11.5px] text-emerald-800 font-semibold">
-                    <span className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600" />
-                      SIMULATION TRIGGER ACTIVE. Direct notifications sent.
-                    </span>
-                    <button 
-                      onClick={resetAll} 
-                      className="text-[10px] font-black uppercase text-emerald-900 border border-emerald-250 bg-white px-3 py-1 rounded-lg hover:bg-emerald-100/50"
-                    >
-                      Reset State
-                    </button>
+                      {simState === 'notified_sms' && (
+                        <div className="pt-1.5 flex items-center gap-1.5 text-blue-600 text-[10px] font-bold uppercase tracking-wider animate-pulse">
+                          <Smartphone className="w-3.5 h-3.5" />
+                          Tap the SMS card inside the phone to launch the portal
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
+                </div>
+
+                {/* STEP 2 */}
+                <div className={cn(
+                  "p-4 rounded-2xl border transition-all duration-300",
+                  simState === 'customer_portal'
+                    ? "bg-blue-50/50 border-blue-200 shadow-xs"
+                    : simState === 'fully_synced'
+                    ? "bg-slate-50 border-slate-100 opacity-75"
+                    : "bg-slate-50/40 border-slate-100 opacity-50"
+                )}>
+                  <div className="flex items-start gap-3">
+                    <div className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center text-[10.5px] font-bold font-mono shrink-0",
+                      simState === 'fully_synced'
+                        ? "bg-emerald-500 text-white"
+                        : "bg-slate-200 text-slate-500"
+                    )}>
+                      {simState === 'fully_synced' ? "✓" : "2"}
+                    </div>
+                    <div className="space-y-1 flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11.5px] font-extrabold text-slate-800 uppercase tracking-tight">Step 2: Interactive Scheduling Matrix</span>
+                        {simState === 'fully_synced' && (
+                          <span className="text-[9px] font-bold text-emerald-600 font-mono bg-emerald-50 px-2 py-0.5 rounded-full uppercase">Submitted</span>
+                        )}
+                      </div>
+                      <p className="text-[10.5px] text-slate-500 font-medium leading-normal">
+                        Customer opens their link to highlight multiple convenient hour ranges when they are home. High courier density zones are illuminated in green.
+                      </p>
+                      {simState === 'customer_portal' && (
+                        <div className="pt-1.5 text-amber-600 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5" />
+                          Select free slots on the grid and click &quot;Confirm Matrix Hour Slots&quot;
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* STEP 3 */}
+                <div className={cn(
+                  "p-4 rounded-2xl border transition-all duration-300",
+                  simState === 'fully_synced'
+                    ? "bg-blue-50/50 border-blue-200 shadow-xs"
+                    : "bg-slate-50/40 border-slate-100 opacity-50"
+                )}>
+                  <div className="flex items-start gap-3">
+                    <div className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center text-[10.5px] font-bold font-mono shrink-0",
+                      simState === 'fully_synced' ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-500"
+                    )}>
+                      3
+                    </div>
+                    <div className="space-y-1 flex-1">
+                      <span className="text-[11.5px] font-extrabold text-slate-800 uppercase tracking-tight">Step 3: Route Re-sequencing & Saving</span>
+                      <p className="text-[10.5px] text-slate-500 font-medium leading-normal">
+                        Backend recalculates live routing. Your package delivery is safely prioritized and locks into optimized slots, maximizing dispatch efficiency.
+                      </p>
+                      {simState === 'fully_synced' && (
+                        <div className="pt-2 flex flex-wrap gap-1.5">
+                          <div className="px-2 py-1 bg-emerald-50 border border-emerald-100 rounded text-[9px] font-bold text-emerald-800 font-mono uppercase">
+                            ✓ STOP UPDATED: #7 → #2
+                          </div>
+                          <div className="px-2 py-1 bg-indigo-50 border border-indigo-100 rounded text-[9px] font-bold text-indigo-800 font-mono uppercase">
+                            🌳 CO₂ AVOIDED: ~{(selectedSlots.length * 0.8).toFixed(1)} KG
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            {/* Simulated Live Server Sync Logs */}
+            {/* Simulated Live Server Sync Timeline */}
             <div className="bg-white rounded-[24px] border border-slate-200 p-6 shadow-sm flex-1 flex flex-col justify-between text-left">
               <div>
                 <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight">System Simulation Event Logs</h4>
-                <p className="text-[11px] text-slate-400 mt-0.5">Automated console outputs reporting carrier scheduling telemetry in Madrid.</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Automated logging of routing and priority adjustments in Madrid.</p>
               </div>
 
-              <div className="bg-slate-900 rounded-2xl p-4 h-44 overflow-y-auto mt-4 font-mono text-[11px] text-slate-350 space-y-2 select-none">
+              <div className="border border-slate-150 rounded-2xl p-4 h-44 overflow-y-auto mt-4 font-mono text-[11px] text-slate-600 bg-slate-50 space-y-2.5 select-none">
                 {simLogs.map((log, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 leading-normal">
-                    <span className="text-indigo-400 text-[10px] font-bold select-noneshrink-0">[{log.time}]</span>
+                  <div key={idx} className="flex items-start gap-2 border-b border-slate-200/50 pb-2 last:border-0 last:pb-0 leading-normal">
+                    <span className="text-blue-600 text-[10px] font-bold shrink-0">[{log.time}]</span>
                     <span className={cn(
-                      "flex-1",
-                      log.type === 'success' ? "text-emerald-400 font-bold" : "",
-                      log.type === 'warning' ? "text-amber-400" : "text-slate-300"
+                      "flex-1 text-[11px] text-slate-700",
+                      log.type === 'success' ? "text-emerald-700 font-bold" : "",
+                      log.type === 'warning' ? "text-amber-700" : ""
                     )}>
                       {log.text}
                     </span>
@@ -394,83 +467,83 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
               <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-5.5 bg-slate-950 rounded-full z-40 hidden md:block" />
 
               {/* Inside Screen Container */}
-              <div className="flex-1 bg-white relative flex flex-col overflow-hidden pt-6 pb-2 text-left">
+              <div className="flex-1 bg-white relative flex flex-col overflow-hidden pt-6 pb-2 text-left min-h-0">
                 
                 {/* STATE 1: PHONE LOCK SCREEN WAITING */}
                 {simState === 'idle' && (
-                  <div className="flex-1 flex flex-col justify-between p-6 bg-slate-900 text-white animate-fade-in text-center">
+                  <div className="flex-1 flex flex-col justify-between p-6 bg-slate-50 text-slate-800 text-center animate-fade-in">
                     <div className="my-auto space-y-4">
-                      <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-slate-400 mx-auto animate-pulse">
+                      <div className="w-12 h-12 bg-blue-50 border border-blue-100 rounded-full flex items-center justify-center text-blue-600 mx-auto animate-pulse">
                         <Bell className="w-5 h-5" />
                       </div>
                       <div className="space-y-1">
-                        <span className="text-slate-500 font-mono text-[9px] uppercase tracking-widest block">MADRID GATEWAY</span>
-                        <h4 className="text-[20px] font-black italic tracking-tighter text-blue-400 uppercase">Lock Screen</h4>
-                        <p className="text-[11.5px] text-slate-400 leading-normal max-w-sm mx-auto">
-                          Waiting for order assignment. Trigger a webhook using the **Simulation Setup** console on the left.
+                        <span className="text-slate-400 font-mono text-[9px] uppercase tracking-widest block">MADRID GATEWAY</span>
+                        <h4 className="text-[18px] font-black tracking-tight text-slate-900">Waiting for Order</h4>
+                        <p className="text-[11px] text-slate-500 leading-relaxed max-w-sm mx-auto font-medium">
+                          Click &quot;Simulate Outbound SMS Notification&quot; on the left to dispatch the delivery token.
                         </p>
                       </div>
                     </div>
 
-                    <div className="text-[10px] text-slate-500 font-mono pb-2">
-                      PHONE PROTOCOL: SMS-WEBHOOK ACTIVE
+                    <div className="text-[9px] text-slate-400 font-mono pb-1 text-center font-semibold uppercase tracking-wider">
+                      Carrier Status: Idle
                     </div>
                   </div>
                 )}
 
                 {/* STATE 2: NEW SMS RECEIVED */}
                 {simState === 'notified_sms' && (
-                  <div className="flex-1 flex flex-col justify-between p-4 bg-slate-900 text-white animate-fade-in">
-                    <div className="pt-6 text-center space-y-1">
-                      <span className="text-slate-500 font-mono text-[10px] uppercase font-bold tracking-widest">SLA Notification Alert</span>
-                      <h4 className="text-[24px] font-black italic tracking-tighter text-yellow-400 uppercase">1 New SMS</h4>
+                  <div className="flex-1 flex flex-col justify-between p-4 bg-slate-50 text-slate-800 animate-fade-in">
+                    <div className="pt-4 text-center space-y-0.5">
+                      <span className="text-slate-400 font-mono text-[9px] uppercase font-black tracking-wider">SMS Inbox</span>
+                      <h4 className="text-[16px] font-black tracking-tight text-slate-900">1 New Message</h4>
                     </div>
 
                     {/* Notification bubble */}
                     <div className="space-y-4 my-auto">
                       <div 
                         onClick={handleOpenSms}
-                        className="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-3xl p-4.5 space-y-3.5 shadow-xl transition-all cursor-pointer active:scale-98"
+                        className="bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3 shadow-md transition-all cursor-pointer active:scale-98 text-left"
                       >
-                        <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                          <span className="text-[9px] font-black uppercase text-blue-400 tracking-widest flex items-center gap-1">
+                        <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                          <span className="text-[9px] font-black uppercase text-blue-600 tracking-wider flex items-center gap-1">
                             <Smartphone className="w-3 h-3" /> SEUR MADRID
                           </span>
-                          <span className="text-[8.5px] font-mono text-slate-400">Just Now</span>
+                          <span className="text-[8px] font-mono text-slate-400">Just Now</span>
                         </div>
 
-                        <p className="text-[11.5px] text-slate-200 leading-normal font-medium">
-                          Hola {activePersona.name}! Your order <strong>#{activePersona.id}</strong> is ready for load assignment.
+                        <p className="text-[11.5px] text-slate-700 leading-relaxed font-semibold">
+                          Hola {activePersona.name}! Your order tracking <strong>#{activePersona.id}</strong> is now active.
                         </p>
-                        <p className="text-[11.5px] text-slate-350 leading-normal italic font-semibold">
-                          Please enter your preferred day x hours on our route matrix to lock a first-run delivery guarantee.
+                        <p className="text-[11px] text-slate-500 leading-normal font-medium">
+                          Please enter your weekly availability matrix to enhance the chances of successful first-time deliveries to you!
                         </p>
 
-                        <div className="p-2.5 bg-blue-950/80 border border-blue-900 rounded-xl flex items-center justify-between text-[11px] text-blue-300 font-mono">
+                        <div className="p-2 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-between text-[10px] text-blue-600 font-mono">
                           <span>node.seur.com/sync-mad</span>
-                          <ChevronRight className="w-4 h-4" />
+                          <ChevronRight className="w-3.5 h-3.5 text-blue-500" />
                         </div>
                       </div>
 
                       <div className="text-center">
-                        <span className="text-[10px] font-black text-blue-400 tracking-wider uppercase animate-pulse">
-                          👆 Tap client SMS to launch Web Portal
+                        <span className="text-[10px] font-black text-blue-600 tracking-wider uppercase animate-pulse">
+                          Tap the SMS card to open
                         </span>
                       </div>
                     </div>
 
-                    <div className="text-center text-[10px] text-slate-500 font-mono">
-                      Spain Carrier Network Simulator
+                    <div className="text-center text-[9px] text-slate-400 font-mono font-medium">
+                      Carrier Notification Simulator
                     </div>
                   </div>
                 )}
 
                 {/* STATE 3: INTERACTIVE MATRIX PORTAL */}
                 {simState === 'customer_portal' && (
-                  <div className="flex-1 flex flex-col justify-between animate-in slide-in-from-bottom duration-300">
+                  <div className="flex-1 flex flex-col justify-between animate-in slide-in-from-bottom duration-300 bg-white min-h-0">
                     
                     {/* Simulated Web Header tab */}
-                    <div className="bg-slate-50 border-b border-slate-200 py-2 px-3 flex items-center gap-1.5 mx-3 rounded-lg text-[9.5px] font-mono text-slate-500 select-none mt-2">
+                    <div className="bg-slate-50 border-b border-slate-150 py-2 px-3 flex items-center gap-1.5 mx-3 rounded-lg text-[9.5px] font-mono text-slate-500 select-none mt-2">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span className="truncate flex-1 font-semibold selection:bg-transparent">node.seur.com/sync-mad</span>
                     </div>
@@ -479,20 +552,20 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
                     <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
                       
                       {/* Package identity tag */}
-                      <div className="bg-[#111] text-white rounded-2xl p-3 border border-slate-800 flex items-center gap-2.5 shadow-sm text-left">
-                        <div className="w-8 h-8 rounded-lg bg-yellow-500 text-slate-950 font-black italic text-center flex items-center justify-center shrink-0 animate-pulse">P</div>
+                      <div className="bg-slate-50 text-slate-800 rounded-2xl p-3 border border-slate-200/80 flex items-center gap-2.5 shadow-xs text-left">
+                        <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-black text-center flex items-center justify-center shrink-0">P</div>
                         <div className="min-w-0 flex-1">
-                          <span className="text-[7.5px] font-sans font-black tracking-widest uppercase text-slate-400 leading-none">ORDER SECURED BY PRIMOR</span>
-                          <h4 className="text-[11px] font-black truncate leading-tight mt-0.5 text-slate-100">{activePersona.item}</h4>
+                          <span className="text-[7.5px] font-sans font-black tracking-wider uppercase text-slate-400 leading-none">ORDER FROM PRIMOR</span>
+                          <h4 className="text-[11px] font-black truncate leading-tight mt-0.5 text-slate-800">{activePersona.item}</h4>
                         </div>
                       </div>
 
                       <div className="space-y-1">
                         <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-tight flex items-center gap-1.5">
-                          <Calendar className="w-4 h-4 text-blue-600" /> Availability Matrix
+                          <Calendar className="w-4 h-4 text-blue-600" /> Global Weekly Availability Matrix
                         </h4>
                         <p className="text-[10px] text-slate-500 font-medium leading-normal">
-                          Indicate your weekly availability. Click cells matching your free slots. Green indicates our carrier fleet proximity is at its maximum.
+                          Select your regular weekly home presence. We store this preference globally to optimize all future orders and guarantee successful first-time deliveries!
                         </p>
                       </div>
 
@@ -524,17 +597,14 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
                                 </div>
                                 <div className="grid grid-cols-7 h-9 divide-x divide-slate-100">
                                   {WEEKDAYS.map((day) => {
-                                    const details = getCellDetails(personaKey, day, hour);
-                                    const isSelected = selectedDay === day && selectedHour === hour;
+                                    const details = getCellDetails('you', day, hour);
+                                    const isSelected = selectedSlots.includes(`${day}:${hour}`);
 
                                     return (
                                       <button
                                         key={day}
                                         type="button"
-                                        onClick={() => {
-                                          setSelectedDay(day);
-                                          setSelectedHour(hour);
-                                        }}
+                                        onClick={() => toggleSlot(day, hour)}
                                         className={cn(
                                           "relative flex items-center justify-center transition-all cursor-pointer h-full group focus:outline-none",
                                           isSelected 
@@ -547,7 +617,7 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
                                           <div className={cn(
                                             "w-3.5 h-3.5 rounded-full flex items-center justify-center text-white",
                                             details.level === 'optimal' ? 'bg-emerald-500' :
-                                            details.level === 'moderate' ? 'bg-amber-400' : 'bg-rose-450'
+                                            details.level === 'moderate' ? 'bg-amber-400' : 'bg-red-500'
                                           )}>
                                             <Check className="w-2.5 h-2.5 stroke-[3.5]" />
                                           </div>
@@ -570,81 +640,243 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
 
                       {/* Selected Matrix Highlight Box */}
                       {pitchStage === 'poc' ? (
-                        <div className="bg-slate-50 rounded-xl p-3 border border-slate-200/80 text-[10px] text-slate-600 font-medium space-y-1">
+                        <div className="bg-slate-50 rounded-xl p-3 border border-slate-200/80 text-[10px] text-slate-600 font-medium space-y-2">
                           <div className="font-bold flex items-center gap-1.5 text-slate-800">
                              <Clock className="w-3.5 h-3.5 text-slate-500" />
-                             Selected Slot: {selectedDay} • {selectedHour}
+                             Selected Slots ({selectedSlots.length})
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {selectedSlots.map(slot => (
+                              <span key={slot} className="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-[8.5px] font-bold">
+                                {slot.replace(':', ' ')}
+                              </span>
+                            ))}
                           </div>
                           <p className="text-[9.5px] text-slate-500 leading-normal pl-1 pt-1">
-                             Selecting this slot reserves a basic delivery attempt with local dispatch.
+                             Selecting these slots reserves basic delivery attempts with local dispatch.
                           </p>
                         </div>
                       ) : pitchStage === 'mvp' ? (
                         <div className="bg-slate-50 rounded-xl p-3 border border-slate-200/85 text-[10px] text-slate-600 font-medium space-y-2 text-left">
                         <div className="font-bold flex items-center gap-1.5 text-slate-800">
                            <Clock className="w-3.5 h-3.5 text-indigo-600" />
-                           Selected: {selectedDay} • {selectedHour}
+                           Selected Slots ({selectedSlots.length})
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedSlots.map(slot => (
+                            <span key={slot} className="bg-white border border-slate-200 px-1.5 py-0.5 rounded text-[8.5px] font-bold text-slate-700">
+                              {slot.replace(':', ' ')}
+                            </span>
+                          ))}
                         </div>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className={cn(
-                            "text-[7px] font-mono leading-none uppercase font-black px-1.5 py-0.5 rounded",
-                            activeCellObj.level === 'optimal' ? "bg-emerald-100 text-emerald-800" :
-                            activeCellObj.level === 'moderate' ? "bg-amber-100 text-amber-800" : "bg-rose-100 text-rose-800"
-                          )}>
-                            {activeCellObj.level} • {activeCellObj.prob}% CONFIDENCE
-                          </span>
+                           <span className={cn(
+                             "text-[7px] font-mono leading-none uppercase font-black px-1.5 py-0.5 rounded",
+                             overallLevel === 'optimal' ? "bg-emerald-100 text-emerald-800" :
+                             overallLevel === 'moderate' ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-850"
+                           )}>
+                             {overallLevel} • {avgProb}% CONFIDENCE
+                           </span>
                         </div>
                         <p className="text-[9.5px] italic text-slate-500 leading-normal pl-0.5">
-                          &quot;{activeCellObj.reason}&quot;
+                           &quot;{overallReason}&quot;
                         </p>
                         <div className="pt-1.5 border-t border-slate-200/50">
                            <div className="w-full bg-slate-200 rounded-full h-1">
                               <div 
-                                className={cn("h-1 rounded-full", activeCellObj.level === 'optimal' ? 'bg-emerald-500' : 'bg-amber-500')} 
-                                style={{ width: `${activeCellObj.prob}%` }} 
+                                className={cn("h-1 rounded-full", overallLevel === 'optimal' ? 'bg-emerald-500' : 'bg-amber-500')} 
+                                style={{ width: `${avgProb}%` }} 
                               />
                            </div>
                         </div>
                       </div>
                       ) : (
-                        <div className="bg-slate-900 rounded-2xl p-4 border border-indigo-950/60 shadow-sm text-[10px] text-slate-300 font-medium space-y-3 text-left relative overflow-hidden">
-                          <div className="absolute top-0 right-0 p-2 opacity-15">
-                            <Sparkles className="w-12 h-12 text-blue-400" />
+                        <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 shadow-sm text-[10px] text-slate-600 font-medium space-y-3 text-left">
+                          <div className="font-extrabold flex items-center gap-1.5 text-slate-900 text-[11px]">
+                             <Clock className="w-3.5 h-3.5 text-blue-600" />
+                             Selected Slots ({selectedSlots.length})
                           </div>
-                          <div className="font-extrabold flex items-center gap-1.5 text-white text-[11px]">
-                             <Clock className="w-3.5 h-3.5 text-indigo-400" />
-                             Matrix Sync: {selectedDay} • {selectedHour}
+                          
+                          <div className="flex flex-wrap gap-1">
+                            {selectedSlots.length === 0 ? (
+                              <span className="text-slate-400 italic text-[9.5px]">No slots selected. Click cells on the grid above to select.</span>
+                            ) : (
+                              selectedSlots.map(slot => {
+                                const [d, h] = slot.split(':');
+                                const detail = getCellDetails('you', d, h);
+                                return (
+                                  <span 
+                                    key={slot}
+                                    onClick={() => toggleSlot(d, h)}
+                                    className={cn(
+                                      "text-[9px] font-mono leading-none uppercase font-black px-2 py-1 rounded-lg border flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-all shadow-xs",
+                                      detail.level === 'optimal' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                                      detail.level === 'moderate' ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-red-50/70 text-red-700 border-red-200"
+                                    )}
+                                  >
+                                    {d} • {h.split(' - ')[0]}
+                                    <span className="opacity-50 font-sans">×</span>
+                                  </span>
+                                );
+                              })
+                            )}
                           </div>
+
                           <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                              <span className={cn(
                                "text-[8px] font-mono leading-none uppercase font-black px-2 py-0.5 rounded tracking-wider",
-                               activeCellObj.level === 'optimal' ? "bg-emerald-500/20 text-emerald-400" :
-                               activeCellObj.level === 'moderate' ? "bg-amber-500/20 text-amber-400" : "bg-rose-500/20 text-rose-405"
+                               overallLevel === 'optimal' ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                               overallLevel === 'moderate' ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-red-55 text-red-700 border border-red-200"
                              )}>
-                               ✦ {activeCellObj.level} SLOT • {activeCellObj.prob}% CONFIDENCE
+                               ✦ {overallLevel} MATCH • {avgProb}% SYNC RELIABILITY
                              </span>
                           </div>
-                          <p className="text-[10px] italic text-slate-300 leading-relaxed bg-white/5 p-2 rounded-lg border border-white/5">
-                             &quot;{activeCellObj.reason}&quot;
+                          
+                          <p className="text-[10px] italic text-slate-500 leading-relaxed bg-white p-2.5 rounded-lg border border-slate-100">
+                             &quot;{overallReason}&quot;
                           </p>
-                          <div className="pt-2 border-t border-white/5 space-y-1 text-[9px] text-slate-400 font-mono">
+                          
+                          <div className="pt-2 border-t border-slate-150 space-y-1 text-[9px] text-slate-400 font-mono">
                              <div className="flex justify-between">
-                                <span className="font-medium text-slate-500">CO₂ SAVING:</span>
-                                <span className="font-bold text-emerald-400">~1.8 kg avoided 🌳</span>
+                                <span className="font-medium">CO₂ SAVINGS:</span>
+                                <span className="font-bold text-emerald-600">~{(selectedSlots.length * 0.8).toFixed(1)} kg avoided 🌳</span>
                              </div>
                              <div className="flex justify-between">
-                                <span className="font-medium text-slate-500">COURIER SPLIT:</span>
-                                <span className="text-indigo-300 font-extrabold">TRUE (Node Sync) ⚡</span>
+                                <span className="font-medium">COURIER SPLIT:</span>
+                                <span className="text-blue-600 font-extrabold">TRUE (Multi-Slot Node Sync) ⚡</span>
                              </div>
                           </div>
                         </div>
                       )}
 
+                      {/* ALTERNATIVE FAIL-SAFE PREFERENCES CARD */}
+                      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left space-y-3.5 shadow-xs">
+                        <div className="space-y-1">
+                          <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-tight flex items-center gap-1.5">
+                            <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                            Alternative Delivery Prefs
+                          </h4>
+                          <p className="text-[10px] text-slate-500 font-medium leading-normal">
+                            In case you are not home or delivery fails:
+                          </p>
+                        </div>
+
+                        {/* Segmented Radio Options */}
+                        <div className="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                          <button
+                            type="button"
+                            onClick={() => setFailSafeOption('retry')}
+                            className={cn(
+                              "py-1.5 px-2 rounded-lg text-[9.5px] font-bold transition-all text-center cursor-pointer",
+                              failSafeOption === 'retry'
+                                ? "bg-white text-slate-900 shadow-xs border border-slate-200/50"
+                                : "text-slate-500 hover:text-slate-800"
+                            )}
+                          >
+                            🔄 Standard Retry
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFailSafeOption('neighbor')}
+                            className={cn(
+                              "py-1.5 px-2 rounded-lg text-[9.5px] font-bold transition-all text-center cursor-pointer",
+                              failSafeOption === 'neighbor'
+                                ? "bg-white text-slate-900 shadow-xs border border-slate-200/50"
+                                : "text-slate-500 hover:text-slate-800"
+                            )}
+                          >
+                            👥 Deliver to Neighbor
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFailSafeOption('locker')}
+                            className={cn(
+                              "py-1.5 px-2 rounded-lg text-[9.5px] font-bold transition-all text-center cursor-pointer",
+                              failSafeOption === 'locker'
+                                ? "bg-white text-slate-900 shadow-xs border border-slate-200/50"
+                                : "text-slate-500 hover:text-slate-800"
+                            )}
+                          >
+                            📦 Drop at Locker
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFailSafeOption('safe_place')}
+                            className={cn(
+                              "py-1.5 px-2 rounded-lg text-[9.5px] font-bold transition-all text-center cursor-pointer",
+                              failSafeOption === 'safe_place'
+                                ? "bg-white text-slate-900 shadow-xs border border-slate-200/50"
+                                : "text-slate-500 hover:text-slate-800"
+                            )}
+                          >
+                            🏡 Safe Place
+                          </button>
+                        </div>
+
+                        {/* Conditional Inputs */}
+                        {failSafeOption === 'neighbor' && (
+                          <div className="space-y-2 bg-white p-3 rounded-xl border border-slate-200/60 animate-in fade-in slide-in-from-top-1 duration-150">
+                            <div className="space-y-1">
+                              <label className="text-[9px] font-bold uppercase text-slate-400">Neighbor Name</label>
+                              <input
+                                type="text"
+                                value={neighborName}
+                                onChange={(e) => setNeighborName(e.target.value)}
+                                className="w-full h-8 px-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                placeholder="e.g. Maria (Conserje) or Sr. Lopez"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[9px] font-bold uppercase text-slate-400">Flat / Apartment</label>
+                              <input
+                                type="text"
+                                value={neighborFlat}
+                                onChange={(e) => setNeighborFlat(e.target.value)}
+                                className="w-full h-8 px-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                placeholder="e.g. 3ºB or Bajo Derecha"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {failSafeOption === 'locker' && (
+                          <div className="space-y-2 bg-white p-3 rounded-xl border border-slate-200/60 animate-in fade-in slide-in-from-top-1 duration-150">
+                            <label className="text-[9px] font-bold uppercase text-slate-400">Select Seur Pickup Point</label>
+                            <select
+                              value={selectedPickupPoint}
+                              onChange={(e) => setSelectedPickupPoint(e.target.value)}
+                              className="w-full h-8 px-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            >
+                              <option value="SEUR Locker - Plaza de Colón">SEUR Locker - Plaza de Colón, Madrid</option>
+                              <option value="SEUR Point - Librería Goya">SEUR Point - Librería Goya, Madrid</option>
+                              <option value="SEUR Locker - Plaza Mayor">SEUR Locker - Plaza Mayor, Madrid</option>
+                              <option value="SEUR Box - Estación Atocha">SEUR Box - Estación Atocha, Madrid</option>
+                            </select>
+                            <div className="text-[8.5px] text-slate-500 leading-tight">
+                              We will redirect the courier to offload your order here in real-time if they miss you.
+                            </div>
+                          </div>
+                        )}
+
+                        {failSafeOption === 'safe_place' && (
+                          <div className="space-y-1.5 bg-white p-3 rounded-xl border border-slate-200/60 animate-in fade-in slide-in-from-top-1 duration-150">
+                            <label className="text-[9px] font-bold uppercase text-slate-400">Safe Place Instructions</label>
+                            <textarea
+                              value={safePlaceInstructions}
+                              onChange={(e) => setSafePlaceInstructions(e.target.value)}
+                              rows={2}
+                              className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
+                              placeholder="e.g. Leave inside the porch behind the blue flower pot"
+                            />
+                          </div>
+                        )}
+                      </div>
+
                       {/* Submit Synchronize Action */}
                       <button
                         onClick={commitSynchronize}
-                        disabled={isSyncing}
-                        className="w-full h-11 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-[11px] uppercase tracking-widest transition-all active:scale-97 flex items-center justify-center gap-2 cursor-pointer shadow-md select-none mt-2"
+                        disabled={isSyncing || selectedSlots.length === 0}
+                        className="w-full h-11 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-xl font-black text-[11px] uppercase tracking-widest transition-all active:scale-97 flex items-center justify-center gap-2 cursor-pointer shadow-md select-none mt-2"
                       >
                         {isSyncing ? (
                           <>
@@ -654,57 +886,77 @@ export function CustomerSimulator({ pitchStage = 'scale' }: { pitchStage?: 'poc'
                         ) : (
                           <>
                             <Check className="w-3.5 h-3.5" />
-                            Confirm Matrix Hour Slot
+                            Confirm & Save Selection ({selectedSlots.length})
                           </>
                         )}
                       </button>
 
                     </div>
 
-                    <div className="bg-slate-100 p-2 text-center text-[7.5px] text-slate-400 font-mono tracking-widest uppercase shrink-0">
-                      🔐 Secure SSL Router • Hermética Network Sync
+                    <div className="bg-slate-50 border-t border-slate-100 p-2 text-center text-[7.5px] text-slate-400 font-mono tracking-widest uppercase shrink-0">
+                      🔐 Secure SSL Router • Network Sync
                     </div>
                   </div>
                 )}
 
                 {/* STATE 4: SUCCESS SYNC OK */}
                 {simState === 'fully_synced' && (
-                  <div className="flex-1 flex flex-col justify-between p-5 bg-[#1E293B] text-white animate-in zoom-in-95 duration-200 relative text-center">
+                  <div className="flex-1 flex flex-col justify-between p-5 bg-white text-slate-800 animate-in zoom-in-95 duration-200 relative text-center">
                     
                     <div className="my-auto space-y-5">
-                      <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center justify-center text-emerald-400 mx-auto shadow-lg animate-bounce">
-                        <Check className="w-6 h-6" />
+                      <div className="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center text-emerald-600 mx-auto shadow-sm">
+                        <Check className="w-6 h-6 stroke-[3px]" />
                       </div>
 
                       <div className="space-y-1">
-                        <h4 className="text-[16px] font-black uppercase tracking-tight text-white leading-tight">Hours Synced</h4>
+                        <h4 className="text-[16px] font-black tracking-tight text-slate-900 leading-tight">Preferences Synced</h4>
                         <span className="text-[8.5px] font-mono text-slate-400 uppercase tracking-widest block font-bold">ROUTE UPDATE RECORDED</span>
                       </div>
 
-                      <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-left text-[11px] space-y-2">
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 text-left text-[11px] space-y-2.5">
                         <div className="flex justify-between font-mono">
-                          <span className="text-slate-400 uppercase font-black text-[8px]">Carrier ID:</span>
-                          <span className="text-indigo-300 font-bold">SEUR MADRID</span>
+                          <span className="text-slate-400 uppercase font-black text-[8px]">Carrier:</span>
+                          <span className="text-slate-800 font-bold">SEUR MADRID</span>
+                        </div>
+                        <div className="flex flex-col gap-1 font-mono">
+                          <span className="text-slate-400 uppercase font-black text-[8px]">Locked Slots:</span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {selectedSlots.map(slot => {
+                              const [d, h] = slot.split(':');
+                              return (
+                                <span key={slot} className="bg-amber-50 border border-amber-200 text-amber-750 text-[8.5px] font-bold px-2 py-0.5 rounded">
+                                  {d} • {h.split(' - ')[0]}
+                                </span>
+                              );
+                            })}
+                          </div>
                         </div>
                         <div className="flex justify-between font-mono">
-                          <span className="text-slate-400 uppercase font-black text-[8px]">Locked Slot:</span>
-                          <span className="text-yellow-300 font-black italic">{selectedHour} ({selectedDay})</span>
+                          <span className="text-slate-400 uppercase font-black text-[8px]">Delivery Stop:</span>
+                          <span className="text-emerald-600 font-extrabold">STOP #{activePersona.newStopOrder}</span>
                         </div>
-                        <div className="flex justify-between font-mono">
-                          <span className="text-slate-400 uppercase font-black text-[8px]">Delivery stop:</span>
-                          <span className="text-emerald-400 font-extrabold">STOP #{activePersona.newStopOrder}</span>
+                        
+                        {/* Fallback Preference Display */}
+                        <div className="flex flex-col gap-0.5 font-mono pt-1.5 border-t border-slate-150">
+                          <span className="text-slate-400 uppercase font-black text-[8px]">Fallback Action:</span>
+                          <span className="text-slate-850 font-bold text-[10px]">
+                            {failSafeOption === 'retry' && '🔄 Standard Retry Tomorrow'}
+                            {failSafeOption === 'neighbor' && `👥 Neighbor: ${neighborName || 'Unspecified'} (Flat ${neighborFlat || 'Unspecified'})`}
+                            {failSafeOption === 'locker' && `📦 Locker: ${selectedPickupPoint}`}
+                            {failSafeOption === 'safe_place' && `🏡 Safe Place: "${safePlaceInstructions || 'Unspecified'}"`}
+                          </span>
                         </div>
                       </div>
 
-                      <p className="text-[9.5px] text-slate-400 italic font-medium leading-relaxed px-1">
-                        The delivery scheduler successfully restructured stop priorities to respect your preference. Safe, on-time delivery promised.
+                      <p className="text-[10px] text-slate-500 italic font-medium leading-relaxed px-1">
+                        The delivery scheduler successfully restructured stop priorities to respect your preferences. On-time delivery guaranteed.
                       </p>
                     </div>
 
                     <div className="pt-2">
                       <button
                         onClick={resetAll}
-                        className="text-[9.5px] uppercase font-black text-slate-400 hover:text-white underline decoration-dotted tracking-wider"
+                        className="text-[9.5px] uppercase font-black text-slate-400 hover:text-slate-600 underline decoration-dotted tracking-wider"
                       >
                         ← Test other Scenarios
                       </button>

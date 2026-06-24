@@ -296,135 +296,74 @@ export function IntelligenceHub({
 
       <div className="flex-1 overflow-y-auto p-4 md:p-8 max-w-[1600px] mx-auto w-full">
         {activeTab === "congestion" && (
-          <div className="space-y-8 text-left animate-in fade-in duration-300">
-            <div className="bg-slate-900 rounded-[32px] border border-white/5 p-6 md:p-8 space-y-4 animate-in slide-in-from-top-6 duration-300">
+          <div className="space-y-6 text-left animate-in fade-in duration-300">
+            <div className="bg-slate-900 rounded-[32px] border border-white/5 p-6 md:p-8 space-y-3 animate-in slide-in-from-top-6 duration-300">
               <h2 className="text-[18px] font-black text-white tracking-tight italic uppercase">
-                Real-Time Traffic Congestion & Locker Latency
+                Real-Time District Traffic Congestion
               </h2>
               <p className="text-[11px] text-slate-400 font-medium">
-                Analysis is explicitly separated into Geographic Sectors (Madrid Central & transit corridors) and Retailer Partner Locker/Hub response latencies to protect merchant handshakes.
+                Analysis of active traffic delays and congestion indexes across key Madrid carrier delivery districts.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-               {/* Geographic Sectors Congestion */}
-               <div className="bg-slate-900 border border-white/5 rounded-[40px] p-6 md:p-8 flex flex-col justify-between min-h-[400px]">
-                 <div>
-                   <h3 className="text-[13px] font-black text-slate-200 uppercase tracking-widest mb-1 italic">
-                     Geographic Sector Traffic Congestion
-                   </h3>
-                   <p className="text-[10px] text-slate-500 font-bold uppercase mb-6">
-                     Active delay impact % across key Madrid delivery sectors
-                   </p>
-                 </div>
-                 <div className="h-[240px] w-full">
-                   <ResponsiveContainer width="100%" height="100%">
-                     <BarChart data={geometricCongestionData}>
-                       <XAxis
-                         dataKey="sector"
-                         interval={0}
-                         axisLine={false}
-                         tickLine={false}
-                         tick={{
-                           fontSize: 8,
-                           fill: "#94A3B8",
-                           fontWeight: "bold",
-                         }}
-                       />
-                       <YAxis hide domain={[0, 100]} />
-                       <Tooltip
-                         contentStyle={{
-                           backgroundColor: "#1E293B",
-                           border: "none",
-                           borderRadius: "8px",
-                           fontSize: "9px",
-                         }}
-                         formatter={(value: any) => [
-                           `${value}% Delay Impact`,
-                           "Congestion",
-                         ]}
-                       />
-                       <Bar
-                         dataKey="congestion"
-                         radius={[4, 4, 0, 0]}
-                         label={{
-                           position: "top",
-                           fill: "#CBD5E1",
-                           fontSize: 9,
-                           fontWeight: "black",
-                           formatter: (val: any) => `${val}%`,
-                         }}
-                       >
-                         {geometricCongestionData.map((entry, index) => (
-                           <Cell key={`cell-${index}`} fill={entry.color} />
-                         ))}
-                       </Bar>
-                     </BarChart>
-                   </ResponsiveContainer>
-                 </div>
-                 <p className="text-[9px] text-slate-500 font-black uppercase mt-6 leading-normal">
-                   * Alert state thresholds (Red &gt; 60%) trigger automatic dispatch time recalculation to protect carrier window agreements.
-                 </p>
-               </div>
-
-               {/* Retailer Locker Latency */}
-               <div className="bg-slate-900 border border-white/5 rounded-[40px] p-6 md:p-8 flex flex-col justify-between min-h-[400px]">
-                 <div>
-                   <h3 className="text-[13px] font-black text-slate-200 uppercase tracking-widest mb-1 italic">
-                     Retail Partner Hub Handshake Latency
-                   </h3>
-                   <p className="text-[10px] text-slate-500 font-bold uppercase mb-6">
-                     Average merchant prep-to-courier hand-off latency in minutes
-                   </p>
-                 </div>
-                 <div className="h-[240px] w-full">
-                   <ResponsiveContainer width="100%" height="100%">
-                     <BarChart data={retailLockerLatencyData}>
-                       <XAxis
-                         dataKey="store"
-                         axisLine={false}
-                         tickLine={false}
-                         tick={{
-                           fontSize: 8,
-                           fill: "#94A3B8",
-                           fontWeight: "bold",
-                         }}
-                       />
-                       <YAxis hide domain={[0, 30]} />
-                       <Tooltip
-                         contentStyle={{
-                           backgroundColor: "#1E293B",
-                           border: "none",
-                           borderRadius: "8px",
-                           fontSize: "9px",
-                         }}
-                         formatter={(value: any) => [
-                           `${value} mins prep delay`,
-                           "Locker Delay",
-                         ]}
-                       />
-                       <Bar
-                         dataKey="latency"
-                         radius={[4, 4, 0, 0]}
-                         label={{
-                           position: "top",
-                           fill: "#CBD5E1",
-                           fontSize: 9,
-                           fontWeight: "black",
-                           formatter: (val: any) => `${val}m`,
-                         }}
-                       >
-                         {retailLockerLatencyData.map((entry, index) => (
-                           <Cell key={`cell-${index}`} fill={entry.color} />
-                         ))}
-                       </Bar>
-                     </BarChart>
-                   </ResponsiveContainer>
-                 </div>
-                 <p className="text-[9px] text-slate-500 font-black uppercase mt-6 leading-normal">
-                   * Operational delays (Red &gt; 15 mins) automatically trigger alternative logistics routing suggestions.
-                 </p>
-               </div>
+            {/* Geographic Sectors Congestion - Full Width */}
+            <div className="bg-slate-900 border border-white/5 rounded-[40px] p-6 md:p-8 flex flex-col justify-between min-h-[380px]">
+              <div>
+                <h3 className="text-[13px] font-black text-slate-200 uppercase tracking-widest mb-1 italic">
+                  Geographic Sector Traffic Congestion
+                </h3>
+                <p className="text-[10px] text-slate-500 font-bold uppercase mb-6">
+                  Active delay impact % across key Madrid delivery sectors
+                </p>
+              </div>
+              <div className="h-[240px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={geometricCongestionData}>
+                    <XAxis
+                      dataKey="sector"
+                      interval={0}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{
+                        fontSize: 8,
+                        fill: "#94A3B8",
+                        fontWeight: "bold",
+                      }}
+                    />
+                    <YAxis hide domain={[0, 100]} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#1E293B",
+                        border: "none",
+                        borderRadius: "8px",
+                        fontSize: "9px",
+                      }}
+                      formatter={(value: any) => [
+                        `${value}% Delay Impact`,
+                        "Congestion",
+                      ]}
+                    />
+                    <Bar
+                      dataKey="congestion"
+                      radius={[4, 4, 0, 0]}
+                      label={{
+                        position: "top",
+                        fill: "#CBD5E1",
+                        fontSize: 9,
+                        fontWeight: "black",
+                        formatter: (val: any) => `${val}%`,
+                      }}
+                    >
+                      {geometricCongestionData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <p className="text-[9px] text-slate-500 font-black uppercase mt-6 leading-normal">
+                * Alert state thresholds (Red &gt; 60%) trigger automatic dispatch offsets to protect carrier window agreements.
+              </p>
             </div>
           </div>
         )}
@@ -615,6 +554,7 @@ export function IntelligenceHub({
                         yAxisId="left"
                         orientation="left"
                         domain={[50, 100]}
+                        ticks={[50, 60, 70, 80, 90, 100]}
                         axisLine={false}
                         tickLine={false}
                         tick={{ fontSize: 9, fill: "#F59E0B", fontWeight: "bold" }}
@@ -624,10 +564,11 @@ export function IntelligenceHub({
                         yAxisId="right"
                         orientation="right"
                         domain={[0, 6000]}
+                        ticks={[0, 1200, 2400, 3600, 4800, 6000]}
                         axisLine={false}
                         tickLine={false}
                         tick={{ fontSize: 9, fill: "#10B981", fontWeight: "bold" }}
-                        tickFormatter={(v) => `€${(v/1000).toFixed(0)}k`}
+                        tickFormatter={(v) => v === 0 ? "€0" : `€${v % 1000 === 0 ? (v / 1000).toFixed(0) : (v / 1000).toFixed(1)}k`}
                       />
                       <Tooltip
                         content={({ active, payload }) => {
@@ -1301,57 +1242,38 @@ function SimulationControl({ label, active, setActive, description }: any) {
 }
 
 export function CongestionView({ pitchStage = 'scale' }: { pitchStage?: 'poc' | 'mvp' | 'scale' }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [selectedHub, setSelectedHub] = useState<string | null>(null);
-
-  const filteredSectors = SEUR_SECTOR_DATA.filter((s) => {
-    const matchesSearch =
-      s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.store.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus =
-      statusFilter === "ALL" ||
-      (statusFilter === "HEAVY" && s.status === "Heavy Traffic") ||
-      (statusFilter === "MODERATE" && s.status === "Moderate") ||
-      (statusFilter === "NORMAL" && s.status === "Normal");
-
-    return matchesSearch && matchesStatus;
-  });
-
   return (
-    <div className="space-y-8 text-left animate-in fade-in duration-300">
+    <div className="space-y-6 text-left animate-in fade-in duration-300">
       {/* Visual Title Header */}
-      <div className="bg-white rounded-[24px] border border-slate-200 p-6 md:p-8 space-y-3 animate-in slide-in-from-top-6 duration-300 shadow-sm relative overflow-hidden">
+      <div className="bg-white rounded-[24px] border border-slate-200 p-6 md:p-8 space-y-3 shadow-sm relative overflow-hidden">
         <div className="absolute right-0 top-0 h-full w-1/3 bg-radial-gradient from-blue-50/50 to-transparent pointer-events-none" />
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 bg-blue-600 text-white rounded-full text-[9px] font-black uppercase tracking-wider font-mono">
+              <span className="px-2.5 py-0.5 bg-indigo-600 text-white rounded-full text-[9px] font-bold uppercase tracking-wider font-mono">
                 Operator: SEUR Spain
               </span>
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] uppercase font-black text-slate-400 font-mono tracking-widest">
+              <span className="text-[10px] uppercase font-bold text-slate-400 font-mono tracking-widest">
                 Live Madrid Feed
               </span>
             </div>
-            <h2 className="text-[20px] md:text-[22px] font-black text-slate-900 tracking-tight uppercase italic">
-              SEUR Madrid Congestion & Locker Latency Matrix
+            <h2 className="text-[20px] md:text-[22px] font-bold text-slate-900 tracking-tight">
+              SEUR Madrid District Congestion
             </h2>
-            <p className="text-[11px] text-slate-500 font-sans leading-relaxed max-w-3xl">
-              Real-time monitoring of SEUR carrier districts, active bottlenecks, and retail merchant locker hand-off delays in Madrid. Use this matrix to implement rapid re-sequencing and truck allocation adjustments.
+            <p className="text-[11px] text-slate-500 font-sans leading-relaxed max-w-3xl font-medium">
+              Real-time traffic delay and congestion index monitoring across key carrier districts in Madrid.
             </p>
           </div>
           <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
             <div className="text-right">
-              <span className="text-[8px] uppercase tracking-widest text-slate-400 block font-black">Average City Delay</span>
-              <span className="text-[16px] font-black text-amber-600 font-mono">44.8 mins</span>
+              <span className="text-[8px] uppercase tracking-wider text-slate-400 block font-bold">Average City Delay</span>
+              <span className="text-[16px] font-bold text-amber-600 font-mono">44.8 mins</span>
             </div>
             <div className="h-8 w-px bg-slate-200" />
             <div className="text-left">
-              <span className="text-[8px] uppercase tracking-widest text-slate-400 block font-black">Active Vans</span>
-              <span className="text-[16px] font-black text-slate-800 font-mono">
+              <span className="text-[8px] uppercase tracking-wider text-slate-400 block font-bold">Active Vans</span>
+              <span className="text-[16px] font-bold text-slate-800 font-mono">
                 {SEUR_SECTOR_DATA.reduce((sum, s) => sum + s.activeVans, 0)} Units
               </span>
             </div>
@@ -1359,345 +1281,139 @@ export function CongestionView({ pitchStage = 'scale' }: { pitchStage?: 'poc' | 
         </div>
       </div>
 
-      {/* Main Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-         {/* Geographic Sectors Congestion */}
-         <div className="bg-white border border-slate-200 rounded-[24px] p-6 md:p-8 flex flex-col justify-between shadow-sm space-y-6">
-           <div>
-             <div className="flex items-center justify-between">
-               <h3 className="text-[13px] font-black text-slate-900 uppercase tracking-widest italic flex items-center gap-2">
-                 <Activity className="w-4 h-4 text-orange-500" />
-                 District Traffic Congestion
-               </h3>
-               <span className="text-[9px] font-mono bg-orange-50 text-orange-700 border border-orange-100 px-2 py-0.5 rounded-lg font-black">
-                 Max: 78% (Salamanca)
-               </span>
-             </div>
-             <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
-               Active delay impact percentage across SEUR Madrid sectors
-             </p>
-           </div>
-           
-           <div className="h-[200px] w-full">
-             <ResponsiveContainer width="100%" height="100%">
-               <BarChart data={geometricCongestionData}>
-                 <XAxis
-                   dataKey="sector"
-                   interval={0}
-                   axisLine={false}
-                   tickLine={false}
-                   tick={{
-                     fontSize: 8,
-                     fill: "#64748B",
-                     fontWeight: "bold",
-                   }}
-                 />
-                 <YAxis hide domain={[0, 100]} />
-                 <Tooltip
-                   contentStyle={{
-                     backgroundColor: "#FFFFFF",
-                     border: "1px solid #E2E8F0",
-                     borderRadius: "12px",
-                     fontSize: "10px",
-                     color: "#0F172A",
-                     boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.05)",
-                   }}
-                   formatter={(value: any) => [
-                     `${value}% Delay Impact`,
-                     "Congestion",
-                   ]}
-                 />
-                 <Bar
-                   dataKey="congestion"
-                   radius={[6, 6, 0, 0]}
-                   label={{
-                     position: "top",
-                     fill: "#475569",
-                     fontSize: 10,
-                     fontWeight: "black",
-                     formatter: (val: any) => `${val}%`,
-                   }}
-                 >
-                   {geometricCongestionData.map((entry, index) => (
-                     <Cell key={`cell-${index}`} fill={entry.color} />
-                   ))}
-                 </Bar>
-               </BarChart>
-             </ResponsiveContainer>
-           </div>
-
-           <p className="text-[9.5px] text-slate-400 font-bold uppercase leading-normal border-t border-slate-100 pt-3">
-             * Alert state thresholds (Red &gt; 60%) trigger automatic SEUR dispatch time recalculation to protect home delivery slot agreements.
-           </p>
-         </div>
-
-         {/* Retailer Locker Latency */}
-         <div className="bg-white border border-slate-200 rounded-[24px] p-6 md:p-8 flex flex-col justify-between shadow-sm space-y-6">
-           <div>
-             <div className="flex items-center justify-between">
-               <h3 className="text-[13px] font-black text-slate-900 uppercase tracking-widest italic flex items-center gap-2">
-                 <Zap className="w-4 h-4 text-blue-500" />
-                 Store Handshake & Prep Latency
-               </h3>
-               <span className="text-[9px] font-mono bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded-lg font-black">
-                 Max: 22m (El Corte Inglés)
-               </span>
-             </div>
-             <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
-               Average merchant prep-to-courier wait time in minutes
-             </p>
-           </div>
-           
-           <div className="h-[200px] w-full">
-             <ResponsiveContainer width="100%" height="100%">
-               <BarChart data={retailLockerLatencyData}>
-                 <XAxis
-                   dataKey="store"
-                   axisLine={false}
-                   tickLine={false}
-                   tick={{
-                     fontSize: 8,
-                     fill: "#64748B",
-                     fontWeight: "bold",
-                   }}
-                 />
-                 <YAxis hide domain={[0, 30]} />
-                 <Tooltip
-                   contentStyle={{
-                     backgroundColor: "#FFFFFF",
-                     border: "1px solid #E2E8F0",
-                     borderRadius: "12px",
-                     fontSize: "10px",
-                     color: "#0F172A",
-                     boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.05)",
-                   }}
-                   formatter={(value: any) => [
-                     `${value} mins prep delay`,
-                     "Locker Delay",
-                   ]}
-                 />
-                 <Bar
-                   dataKey="latency"
-                   radius={[6, 6, 0, 0]}
-                   label={{
-                     position: "top",
-                     fill: "#475569",
-                     fontSize: 10,
-                     fontWeight: "black",
-                     formatter: (val: any) => `${val}m`,
-                   }}
-                 >
-                   {retailLockerLatencyData.map((entry, index) => (
-                     <Cell key={`cell-${index}`} fill={entry.color} />
-                   ))}
-                 </Bar>
-               </BarChart>
-             </ResponsiveContainer>
-           </div>
-
-           <p className="text-[9.5px] text-slate-400 font-bold uppercase leading-normal border-t border-slate-100 pt-3">
-             * Handshake delay limit is 15 minutes. Excess delays prompt suggestions to route drivers to close-by smart lockboxes.
-           </p>
-         </div>
-      </div>
-
-      {/* Interactive City-Wide Operations Panel */}
-      <div className="bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden text-slate-800">
-        <div className="p-6 bg-slate-50/50 border-b border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h3 className="text-[14px] font-black text-slate-900 uppercase tracking-tight">
-              Interactive SEUR Fleet & District Status Ledger
+      {/* Main Chart Card - Full Width */}
+      <div className="bg-white border border-slate-200 rounded-[24px] p-6 md:p-8 flex flex-col justify-between shadow-sm space-y-6">
+        <div>
+          <div className="flex items-center justify-between">
+            <h3 className="text-[13px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <Activity className="w-4 h-4 text-indigo-600" />
+              District Traffic Congestion
             </h3>
-            <p className="text-[10.5px] text-slate-500 font-sans">
-              Complete diagnostic readout of all {SEUR_SECTOR_DATA.length} active delivery zones. Click any row to focus or highlight.
-            </p>
+            <span className="text-[9px] font-mono bg-orange-50 text-orange-700 border border-orange-100 px-2 py-0.5 rounded-lg font-bold">
+              Max: 78% (Salamanca)
+            </span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Search Input */}
-            <input
-              type="text"
-              placeholder="Search sector, code or store..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-white border border-slate-200 px-3.5 py-1.5 rounded-xl text-[11px] font-medium text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 min-w-[200px]"
-            />
-
-            {/* Filter Buttons */}
-            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200/50">
-              {["ALL", "NORMAL", "MODERATE", "HEAVY"].map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setStatusFilter(f)}
-                  className={cn(
-                    "px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all",
-                    statusFilter === f
-                      ? "bg-white text-slate-900 shadow-sm"
-                      : "text-slate-500 hover:text-slate-800"
-                  )}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
-          </div>
+          <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
+            Active delay impact percentage across SEUR Madrid sectors
+          </p>
+        </div>
+        
+        <div className="h-[220px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={geometricCongestionData}>
+              <XAxis
+                dataKey="sector"
+                interval={0}
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fontSize: 8,
+                  fill: "#64748B",
+                  fontWeight: "semibold",
+                }}
+              />
+              <YAxis hide domain={[0, 100]} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#FFFFFF",
+                  border: "1px solid #E2E8F0",
+                  borderRadius: "12px",
+                  fontSize: "10px",
+                  color: "#0F172A",
+                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.05)",
+                }}
+                formatter={(value: any) => [
+                  `${value}% Delay Impact`,
+                  "Congestion",
+                ]}
+              />
+              <Bar
+                dataKey="congestion"
+                radius={[6, 6, 0, 0]}
+                label={{
+                  position: "top",
+                  fill: "#475569",
+                  fontSize: 10,
+                  fontWeight: "bold",
+                  formatter: (val: any) => `${val}%`,
+                }}
+              >
+                {geometricCongestionData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
-        {/* Diagnostic Table/List */}
+        <p className="text-[9.5px] text-slate-400 font-bold uppercase leading-normal border-t border-slate-100 pt-3">
+          * Alert state thresholds (Red &gt; 60%) trigger automatic dispatch time offsets to preserve delivery window agreements.
+        </p>
+      </div>
+
+      {/* Simple, Non-Interactive District Ledger */}
+      <div className="bg-white border border-slate-200 rounded-[24px] shadow-sm overflow-hidden text-slate-800">
+        <div className="p-6 bg-slate-50/50 border-b border-slate-200">
+          <h3 className="text-[14px] font-bold text-slate-900 uppercase tracking-tight">
+            SEUR District Status Overview
+          </h3>
+          <p className="text-[10.5px] text-slate-500 font-sans font-medium mt-0.5">
+            Current status of all {SEUR_SECTOR_DATA.length} active delivery zones in Madrid.
+          </p>
+        </div>
+
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-[11.5px] border-collapse">
+          <table className="w-full text-left text-[11px] border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-400 text-[9px] uppercase font-black tracking-widest">
-                <th className="py-4.5 px-6 font-mono">SEUR Code</th>
-                <th className="py-4.5 px-6">District Sector</th>
-                <th className="py-4.5 px-6 text-center">Active Vans</th>
-                <th className="py-4.5 px-6">Partner Store</th>
-                <th className="py-4.5 px-6">Prep Latency</th>
-                <th className="py-4.5 px-6">Road Congestion</th>
-                <th className="py-4.5 px-6 text-center">Operational Status</th>
-                <th className="py-4.5 px-6 text-right">Optimizers Audit</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-400 text-[9px] uppercase font-bold tracking-wider">
+                <th className="py-3 px-6 font-mono">SEUR Code</th>
+                <th className="py-3 px-6">District Sector</th>
+                <th className="py-3 px-6 text-center">Active Vans</th>
+                <th className="py-3 px-6">Road Congestion</th>
+                <th className="py-3 px-6 text-right">Operational Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredSectors.length > 0 ? (
-                filteredSectors.map((sector) => {
-                  const isHighlighted = selectedHub === sector.id;
-                  
-                  return (
-                    <tr
-                      key={sector.id}
-                      onClick={() => setSelectedHub(isHighlighted ? null : sector.id)}
-                      className={cn(
-                        "hover:bg-slate-50/60 transition-colors cursor-pointer group",
-                        isHighlighted ? "bg-blue-50/40 hover:bg-blue-50/60" : ""
-                      )}
-                    >
-                      <td className="py-4 px-6 font-mono font-black text-slate-600 group-hover:text-blue-600 transition-colors">
-                        {sector.code}
-                      </td>
-                      <td className="py-4 px-6">
-                        <div>
-                          <span className="font-bold text-slate-900 block truncate max-w-[200px]">
-                            {sector.name}
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-mono">
-                            {sector.id} Node
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6 text-center">
-                        <span className="px-2.5 py-1 bg-slate-100 text-slate-700 font-bold rounded-lg font-mono">
-                          {sector.activeVans} Vans
-                        </span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className="font-medium text-slate-700">
-                          {sector.store}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex items-center gap-1.5 font-mono">
-                          <span className={cn(
-                            "w-2 h-2 rounded-full",
-                            sector.latency > 15 ? "bg-rose-500" : sector.latency > 10 ? "bg-amber-400" : "bg-emerald-500"
-                          )} />
-                          <span className="font-bold text-slate-700">{sector.latency} minutes</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="space-y-1 w-24">
-                          <div className="flex justify-between text-[10px] text-slate-400 font-bold font-mono">
-                            <span>Index:</span>
-                            <span>{sector.congestion}%</span>
-                          </div>
-                          {/* Mini Progress Bar */}
-                          <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-500"
-                              style={{
-                                width: `${sector.congestion}%`,
-                                backgroundColor: sector.color,
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6 text-center">
-                        <span className={cn(
-                          "px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border font-mono",
-                          sector.status === "Normal" ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
-                          sector.status === "Moderate" ? "bg-amber-50 text-amber-700 border-amber-100" :
-                          "bg-rose-50 text-rose-700 border-rose-100"
-                        )}>
-                          {sector.status}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6 text-right">
-                        <span className="text-[10px] font-black text-blue-600 hover:underline">
-                          {isHighlighted ? "Hide Intervention" : "View Protocol →"}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400 font-medium">
-                    No SEUR sectors match your search or filter tags.
+              {SEUR_SECTOR_DATA.map((sector) => (
+                <tr key={sector.id} className="hover:bg-slate-50/40 transition-colors">
+                  <td className="py-3.5 px-6 font-mono font-bold text-slate-500">
+                    {sector.code}
+                  </td>
+                  <td className="py-3.5 px-6 font-semibold text-slate-800">
+                    {sector.name}
+                  </td>
+                  <td className="py-3.5 px-6 text-center font-bold text-slate-600">
+                    {sector.activeVans} Vans
+                  </td>
+                  <td className="py-3.5 px-6">
+                    <div className="flex items-center gap-3">
+                      <span className="font-bold text-slate-700 min-w-[28px]">{sector.congestion}%</span>
+                      <div className="w-24 bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${sector.congestion}%`,
+                            backgroundColor: sector.color,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3.5 px-6 text-right">
+                    <span className={cn(
+                      "px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider border font-mono",
+                      sector.status === "Normal" ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
+                      sector.status === "Moderate" ? "bg-amber-50 text-amber-700 border-amber-100" :
+                      "bg-rose-50 text-rose-700 border-rose-100"
+                    )}>
+                      {sector.status}
+                    </span>
                   </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>
-
-        {/* Selected Hub Detail Card Drawer (Dynamic accordion panel) */}
-        <AnimatePresence>
-          {selectedHub && (() => {
-            const extraSector = SEUR_SECTOR_DATA.find(s => s.id === selectedHub);
-            if (!extraSector) return null;
-            return (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="bg-slate-50 border-t border-slate-200 p-6 text-left"
-              >
-                <div className="max-w-4xl space-y-4">
-                  <div className="flex items-center gap-2.5">
-                    <span className="p-1 px-2.5 bg-blue-600 text-white rounded-lg font-mono text-[10px] font-black">
-                      INTERVENTION ADVICE
-                    </span>
-                    <h4 className="text-[13px] font-black text-slate-800 uppercase tracking-tight">
-                      Operational Protocol for {extraSector.code} ({extraSector.name})
-                    </h4>
-                  </div>
-                  <p className="text-[11.5px] text-slate-700 font-medium font-sans leading-relaxed">
-                    {extraSector.intervention}
-                  </p>
-                  <div className="flex gap-4 pt-1">
-                    <div className="bg-white border border-slate-200 p-3 rounded-xl shadow-sm text-[10.5px] font-mono space-y-1">
-                      <span className="text-slate-400 block text-[8.5px] uppercase font-black">Active Logistics Line</span>
-                      <span className="text-slate-700 font-bold block">{extraSector.store} Node Point</span>
-                    </div>
-                    <div className="bg-white border border-slate-200 p-3 rounded-xl shadow-sm text-[10.5px] font-mono space-y-1">
-                      <span className="text-slate-400 block text-[8.5px] uppercase font-black">Average Service Level Agreement</span>
-                      <span className="text-slate-700 font-bold block">94.4% Priority Success Rate</span>
-                    </div>
-                    <div className="bg-white border border-slate-200 p-3 rounded-xl shadow-sm text-[10.5px] font-mono space-y-1">
-                      <span className="text-slate-400 block text-[8.5px] uppercase font-black">Risk Evaluation</span>
-                      <span className="text-slate-700 font-bold block flex items-center gap-1">
-                        <span className={cn("w-1.5 h-1.5 rounded-full", extraSector.congestion > 60 ? "bg-rose-500 animate-pulse" : "bg-emerald-500")} />
-                        {extraSector.congestion > 60 ? "HIGH CRITICAL WINDOW DELAY" : "NOMINAL MARGINS"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })()}
-        </AnimatePresence>
       </div>
     </div>
   );
@@ -2006,24 +1722,24 @@ export function HistoricalSyncView({
           </div>
           <div className="relative z-10 flex flex-col md:flex-row md:items-start justify-between mb-4 gap-4">
             <div>
-              <h2 className="text-[18px] md:text-[20px] font-black text-slate-900 tracking-tight uppercase italic whitespace-nowrap">
-                Historical Sync
+              <h2 className="text-[18px] md:text-[20px] font-bold text-slate-900 tracking-tight">
+                7-Day Performance History
               </h2>
-              <p className="text-[10px] md:text-[11px] text-slate-400 font-bold uppercase tracking-widest md:mt-1">
-                Reliability Score vs Yield Recovery (Last 7 Days)
+              <p className="text-[10px] md:text-[11px] text-slate-400 font-bold uppercase tracking-wider md:mt-1">
+                Daily On-Time Reliability vs Total Cost Savings
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-[9px] font-black uppercase tracking-wider bg-slate-5 p-2 rounded-xl border border-slate-100">
+            <div className="flex flex-wrap items-center gap-4 text-[9px] font-bold uppercase tracking-wider bg-slate-5 p-2 rounded-xl border border-slate-100">
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-amber-500" />
-                <span className="text-amber-600 font-mono">Reliability Rate (%)</span>
+                <span className="text-amber-600 font-mono">On-Time Rate (%)</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-emerald-500 font-mono">Recaptured Yield (€)</span>
+                <span className="text-emerald-500 font-mono">Cost Savings (€)</span>
               </div>
-              <div className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded border border-slate-200 text-[8px] font-black">
-                7-Day Sync
+              <div className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded border border-slate-200 text-[8px] font-bold">
+                7-Day Overview
               </div>
             </div>
           </div>
@@ -2031,26 +1747,26 @@ export function HistoricalSyncView({
           {/* Interactive Metrics Bar reflecting graph data */}
           <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-2xl mb-6 border border-slate-200 relative z-10">
             <div>
-              <span className="text-[8px] text-slate-400 font-black uppercase tracking-wider block mb-0.5">
-                Sync Day Bin
+              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
+                Date
               </span>
-              <span className="text-[13px] font-black text-blue-600 tracking-tight">
+              <span className="text-[13px] font-bold text-indigo-600 tracking-tight">
                 {activeHoveredDay.day}
               </span>
             </div>
             <div>
-              <span className="text-[8px] text-slate-400 font-black uppercase tracking-wider block mb-0.5">
-                Reliability Score
+              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
+                On-Time Reliability
               </span>
-              <span className="text-[13px] font-black text-amber-500 tracking-tight">
+              <span className="text-[13px] font-bold text-amber-500 tracking-tight">
                 {activeHoveredDay.confidence}%
               </span>
             </div>
             <div>
-              <span className="text-[8px] text-slate-400 font-black uppercase tracking-wider block mb-0.5">
-                Est. Recaptured Yield
+              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
+                Estimated Savings
               </span>
-              <span className="text-[13px] font-black text-emerald-600 tracking-tight">
+              <span className="text-[13px] font-bold text-emerald-600 tracking-tight">
                 €{activeHoveredDay.savings.toLocaleString()}
               </span>
             </div>
@@ -2096,6 +1812,7 @@ export function HistoricalSyncView({
                   yAxisId="left"
                   orientation="left"
                   domain={[50, 100]}
+                  ticks={[50, 60, 70, 80, 90, 100]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 9, fill: "#D97706", fontWeight: "bold" }}
@@ -2105,10 +1822,11 @@ export function HistoricalSyncView({
                   yAxisId="right"
                   orientation="right"
                   domain={[0, 6000]}
+                  ticks={[0, 1200, 2400, 3600, 4800, 6000]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 9, fill: "#059669", fontWeight: "bold" }}
-                  tickFormatter={(v) => `€${(v/1000).toFixed(0)}k`}
+                  tickFormatter={(v) => v === 0 ? "€0" : `€${v % 1000 === 0 ? (v / 1000).toFixed(0) : (v / 1000).toFixed(1)}k`}
                 />
                 <Tooltip
                   content={({ active, payload }) => {
@@ -2116,13 +1834,13 @@ export function HistoricalSyncView({
                       const data = payload[0].payload;
                       return (
                         <div className="bg-white p-4 rounded-xl border border-slate-200 text-left space-y-1.5 shadow-md max-w-[240px]">
-                          <p className="text-[10px] font-black uppercase text-blue-600 tracking-wider">Sync: {data.day}</p>
+                          <p className="text-[10px] font-bold uppercase text-indigo-600 tracking-wider">Date: {data.day}</p>
                           <p className="text-[9px] text-slate-500 leading-normal font-sans">
-                            Under Arrivio network orchestration, this interval aggregates physical stops into optimized regional clusters.
+                            Daily performance summary showing on-time delivery rate alongside total logistics cost savings.
                           </p>
-                          <div className="pt-1 flex justify-between items-center text-[9px] font-black uppercase gap-4">
+                          <div className="pt-1 flex justify-between items-center text-[9px] font-bold uppercase gap-4">
                             <span className="text-amber-600">Reliability: {data.confidence}%</span>
-                            <span className="text-emerald-600 font-sans">Yield: €{data.savings.toLocaleString()}</span>
+                            <span className="text-emerald-600 font-sans">Savings: €{data.savings.toLocaleString()}</span>
                           </div>
                         </div>
                       );
@@ -2158,10 +1876,10 @@ export function HistoricalSyncView({
       <div className="lg:col-span-4 space-y-6">
         <div className="bg-white rounded-[24px] border border-slate-200 h-full flex flex-col p-6 min-h-[380px] shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-[13px] font-black text-slate-800 uppercase tracking-widest italic animate-pulse">
-              Live Intelligence Feed
+            <h3 className="text-[13px] font-bold text-slate-800 uppercase tracking-wider animate-pulse">
+              System Events Feed
             </h3>
-            <div className="px-2 py-0.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-full text-[8px] font-black uppercase">
+            <div className="px-2 py-0.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-full text-[8px] font-bold uppercase">
               3 Active Risks
             </div>
           </div>
@@ -2175,8 +1893,8 @@ export function HistoricalSyncView({
             />
             <AlertItem
               type="sync"
-              label="ETA Sync Broadcast"
-              detail="Synced location data for transit packages. Recipient notifications updated successfully."
+              label="ETA Update Broadcast"
+              detail="Updated location data for active transit packages and notified recipients."
               time="5m ago"
             />
             <AlertItem
@@ -2188,10 +1906,10 @@ export function HistoricalSyncView({
           </div>
 
           <button
-            className="w-full mt-6 py-4 bg-slate-50 text-slate-600 hover:text-slate-900 rounded-[20px] text-[10px] font-black uppercase tracking-widest transition-all border border-slate-200 cursor-pointer shadow-sm"
+            className="w-full mt-6 py-4 bg-slate-50 text-slate-600 hover:text-slate-900 rounded-[20px] text-[10px] font-bold uppercase tracking-wider transition-all border border-slate-200 cursor-pointer shadow-sm"
             onClick={() => setShowAuditModal(true)}
           >
-            Cryptographic Audit Logs
+            System Audit Logs
           </button>
         </div>
       </div>
@@ -2208,16 +1926,16 @@ export function HistoricalSyncView({
             >
               <div className="p-6 md:p-8 border-b border-secondary-100 bg-slate-50 flex items-center justify-between">
                 <div>
-                  <h3 className="text-[17px] font-black text-slate-900 uppercase tracking-tight italic">
-                    ENTERPRISE AUDIT TRAIL LOGS
+                  <h3 className="text-[17px] font-bold text-slate-900 uppercase tracking-tight">
+                    SYSTEM AUDIT LOGS
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 font-sans">
-                    Automated Ledger Synchronizations & Security Events
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5 font-sans">
+                    Automated route updates and delivery logs
                   </p>
                 </div>
                 <button
                   onClick={() => setShowAuditModal(false)}
-                  className="px-4 py-2 bg-slate-100 rounded-xl border border-slate-200 hover:bg-slate-200 text-[10px] uppercase font-black tracking-wider text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
+                  className="px-4 py-2 bg-slate-100 rounded-xl border border-slate-200 hover:bg-slate-200 text-[10px] uppercase font-bold tracking-wider text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
                 >
                   Close
                 </button>
@@ -2233,35 +1951,35 @@ export function HistoricalSyncView({
                   <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-2 shadow-sm">
                     <div className="flex items-center justify-between text-[10px]">
                       <span className="text-amber-600 font-bold uppercase tracking-wider">
-                        [OPTIMIZATION_SYNC]
+                        [ROUTE_OPTIMIZATION]
                       </span>
                       <span className="text-slate-400">
                         Just now
                       </span>
                     </div>
                     <p className="text-slate-600">
-                      Neighborhood presence sync executed for sector MAD-A1. Recaptured queue processing delay.
+                      Route optimization successfully recalculated for Salamanca sector. Resolved 15-minute traffic delay.
                     </p>
                   </div>
 
                   <div className="p-4 bg-white rounded-2xl border border-slate-200 space-y-2 shadow-sm">
                     <div className="flex items-center justify-between text-[10px]">
-                      <span className="text-blue-600 font-bold uppercase tracking-wider">
-                        [YIELD_RECOVERY]
+                      <span className="text-indigo-600 font-bold uppercase tracking-wider">
+                        [COST_SAVED]
                       </span>
                       <span className="text-slate-400">
                         10m ago
                       </span>
                     </div>
                     <p className="text-slate-600">
-                      Automatic validation completed: €420 recovered by Node-Sync B. Congestion risk resolved.
+                      Completed route adjustment: €420 in transit costs saved by re-sequencing delivery sequence.
                     </p>
                   </div>
                 </div>
               </div>
 
               <div className="p-6 bg-slate-50 border-t border-slate-150 flex items-center justify-between text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                <span>Secure ISO-27001 Cryptographic Ledger</span>
+                <span>Secure System Audit Ledger</span>
                 <span>Page 1 of 1</span>
               </div>
             </motion.div>

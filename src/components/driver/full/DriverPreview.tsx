@@ -69,7 +69,7 @@ export function DriverPreview({
         setIsSigned(false);
       }, 500);
     } else {
-      alert("Operational shift completed. All nodes synchronized.");
+      showPhoneToast("Operational Shift Completed!", "All route stops and delivery nodes synchronized.", "success");
     }
     setShowFailureReasons(false);
     setShowHandover(false);
@@ -125,7 +125,7 @@ export function DriverPreview({
            )}
            <div className="text-center">
               <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{viewMode === 'map' ? 'Nav-Live' : 'Active-Node'}</h2>
-              <p className="text-[14px] font-black text-slate-900 tracking-tighter">STOP 0{currentStopIndex + 1}/{stops.length}</p>
+              <p className="text-[14px] font-black text-slate-900 tracking-tighter">STOP 0{currentStopIndex + 1}/{filteredStops.length}</p>
            </div>
            <div className="w-9 h-9 rounded-xl flex items-center justify-center relative">
               <Bell className="w-4 h-4 text-slate-400" />
@@ -257,20 +257,21 @@ export function DriverPreview({
                     </p>
                     
                     <div className="space-y-1">
+                       <h3 className="text-[15px] font-black uppercase italic tracking-tight leading-none text-slate-800">
+                          Recipient: {activeStop.userId}
+                       </h3>
+                       <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                          Origin Merchant: <strong className="font-[1000] text-slate-800 underline decoration-slate-300">{activeStop.merchantOrigin || 'Zara Serrano'}</strong>
+                       </p>
                        {activeStop.stopType === 'pickup' && (
-                         <h3 className="text-[15px] font-black text-amber-600 uppercase italic tracking-tight leading-none">
-                            {activeStop.storeName}
-                         </h3>
+                         <div className="mt-1 text-[11px] font-black text-amber-600 uppercase tracking-widest leading-none">
+                            Locker Destination: <strong className="font-[1000] text-amber-800 underline decoration-amber-300">{activeStop.storeName}</strong>
+                         </div>
                        )}
                        {activeStop.stopType === 'delivery' && (
-                         <>
-                           <h3 className="text-[13px] font-black text-blue-600 uppercase italic tracking-widest leading-none mb-1">
-                              {activeStop.entityId}
-                           </h3>
-                           <p className="text-[11px] font-black uppercase tracking-tighter text-slate-500">
-                             {activeStop.userId}
-                           </p>
-                         </>
+                         <div className="mt-1 text-[11px] font-black text-blue-600 uppercase tracking-widest leading-none">
+                            Direct Home Delivery
+                         </div>
                        )}
                     </div>
 
@@ -334,7 +335,7 @@ export function DriverPreview({
                  </div>
 
                  {/* Pitch-Stage Dynamic Action Modules (Noticeable Progression) */}
-                 {pitchStage === 'mvp' && activeStop.predictedProbability < 0.94 && (
+                 {false && (
                    <div className="p-4 bg-amber-50/70 border border-amber-200 rounded-2xl text-left space-y-2 animate-in slide-in-from-top-4 duration-300">
                       <p className="text-[9px] font-mono font-black text-amber-800 uppercase flex items-center gap-1.5 leading-none">
                          <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -360,7 +361,7 @@ export function DriverPreview({
                    </div>
                  )}
 
-                 {pitchStage === 'scale' && activeStop.predictedProbability < 0.94 && (
+                 {false && (
                    <div className="p-4 bg-slate-900 border border-indigo-900/40 text-left rounded-2xl text-white space-y-3 animate-in fade-in duration-300 relative overflow-hidden shadow-md">
                       <div className="absolute top-0 right-0 p-3 opacity-[0.035] pointer-events-none">
                          <BrainCircuit className="w-20 h-20 text-indigo-400" />
@@ -472,27 +473,34 @@ export function DriverPreview({
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
-                className="absolute inset-x-0 bottom-0 h-full bg-white z-50 p-6 flex flex-col"
+                className={cn(
+                  "absolute inset-x-0 bottom-0 bg-white z-50 border-t border-slate-150 rounded-t-[32px] p-6 flex flex-col shadow-[0_-8px_30px_rgb(0,0,0,0.12)] text-left",
+                  pitchStage === 'poc' ? "h-[320px]" : pitchStage === 'mvp' ? "h-[380px]" : "h-[530px]"
+                )}
               >
-                <div className="flex items-center justify-between mb-4 shrink-0">
-                   <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest italic leading-none">Operational Exception Report</p>
+                <div className="flex items-center justify-between mb-4 shrink-0 pb-2 border-b border-slate-100">
+                   <p className="text-[12px] font-black text-slate-900 uppercase tracking-widest italic leading-none">Operational Exception Report</p>
                    <button onClick={() => setShowFailureReasons(false)} className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
                       <X className="w-5 h-5" />
                    </button>
                 </div>
-                <div className="grid grid-cols-2 gap-2 flex-1 overflow-hidden">
+                <div className="grid grid-cols-2 gap-2 overflow-y-auto pr-1">
                   {[
-                    { icon: DoorOpen, label: 'Absence', key: 'not-home' },
-                    { icon: MapPinned, label: 'Obfuscated', key: 'wrong-address' },
-                    { icon: ShieldAlert, label: 'Denied', key: 'access-denied' },
-                    { icon: PackageOpen, label: 'Congested', key: 'safe-place-full' },
-                    { icon: Scan, label: 'Mismatch', key: 'barcode-error' },
-                    { icon: AlertTriangle, label: 'Force', key: 'other' }
+                    { icon: DoorOpen, label: 'Person Not Home', key: 'person-not-home' },
+                    { icon: MapPinned, label: 'Wrong Address', key: 'wrong-address' },
+                    ...(pitchStage === 'mvp' || pitchStage === 'scale' ? [
+                      { icon: AlertTriangle, label: 'Address Incomplete', key: 'address-incomplete' }
+                    ] : []),
+                    ...(pitchStage === 'scale' ? [
+                      { icon: ShieldAlert, label: 'Blocked Entry to Building', key: 'blocked-entry' },
+                      { icon: Clock, label: 'Unresponsive Intercom', key: 'unresponsive-intercom' },
+                      { icon: X, label: 'Refused / Damaged', key: 'refused-damaged' }
+                    ] : [])
                   ].map((reason) => (
                     <button 
                       key={reason.key}
                       onClick={() => goToNextStop(activeStop.id, reason.key as any)} 
-                      className="p-3 bg-slate-50 border border-slate-100 rounded-2xl text-[9px] font-black text-slate-700 hover:bg-slate-900 hover:text-white transition-all flex flex-col items-center justify-center gap-2 group uppercase italic tracking-tighter text-center"
+                      className="p-3 bg-slate-50 border border-slate-100 rounded-2xl text-[9.5px] font-black text-slate-700 hover:bg-slate-900 hover:text-white transition-all flex flex-col items-center justify-center gap-2 group uppercase italic tracking-tighter text-center"
                     >
                       <reason.icon className="w-5 h-5 text-slate-400 group-hover:text-blue-400 transition-colors" />
                       {reason.label}

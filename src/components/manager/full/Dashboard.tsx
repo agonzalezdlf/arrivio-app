@@ -1342,7 +1342,7 @@ export function Dashboard({
                           : "text-slate-500 hover:text-slate-800 border-transparent hover:bg-slate-50",
                       )}
                     >
-                      <Network className="w-3.5 h-3.5" /> Historical Sync
+                      <Network className="w-3.5 h-3.5" /> Historical Performance
                     </button>
                   </>
                 )}
@@ -1374,8 +1374,8 @@ export function Dashboard({
                   <KPICard
                     title="Success Rate"
                     value={`${autoSuccessRate}%`}
-                    trend="↑ 2.4%"
-                    detail="Dynamic model outcome"
+                    trend="↑ 2.4% increase"
+                    detail="vs last month"
                     up={true}
                   />
                   <KPICard
@@ -1395,12 +1395,12 @@ export function Dashboard({
                   />
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
                   <KPICard
                     title="Success Rate"
                     value={`${autoSuccessRate}%`}
-                    trend="↑ 2.4%"
-                    detail="Dynamic model outcome"
+                    trend="↑ 2.4% increase"
+                    detail="vs last month"
                     up={true}
                   />
                   <KPICard
@@ -1433,59 +1433,55 @@ export function Dashboard({
                     up={true}
                     accent="emerald"
                   />
-                  <KPICard
-                    title="Fleet Efficiency"
-                    value="98.2%"
-                    trend="Optimal"
-                    detail="156 active / 2 idle"
-                    up={true}
-                  />
                 </div>
               )}
 
               {/* System-Wide AI Polish & Fleet Reallocator Banner */}
-              <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-900/40 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl text-left animate-in fade-in slide-in-from-top-4 duration-500">
+              <div className="bg-white border border-slate-200/80 rounded-3xl p-6 text-slate-800 relative overflow-hidden shadow-sm text-left animate-in fade-in duration-300">
                 {/* Visual background sparkles */}
-                <div className="absolute top-0 right-0 p-3 opacity-10 pointer-events-none">
-                  <Sparkles className="w-16 h-16 text-indigo-400 rotate-12" />
+                <div className="absolute top-0 right-0 p-3 opacity-20 pointer-events-none">
+                  <Sparkles className="w-16 h-16 text-indigo-500/30 rotate-12" />
                 </div>
 
-                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div className="space-y-2 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-mono font-black uppercase tracking-[0.2em] px-2 py-0.5 bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/20">
-                        {pitchStage === "poc"
-                          ? "POC SYSTEM POLISH"
-                          : pitchStage === "mvp"
-                            ? "MVP FLEET BALANCER"
-                            : "SCALE COGNITIVE HUB"}
-                      </span>
-                      {systemOptimized && (
-                        <span className="text-[9px] font-mono font-black uppercase tracking-wider px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/20 flex items-center gap-1 animate-pulse">
-                          ● DYNAMIC ALLOCATION LIVE
+                <div className="relative z-10 flex flex-col lg:flex-row items-start justify-between gap-6">
+                  <div className="space-y-4 flex-1 w-full">
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg border border-slate-200">
+                          {pitchStage === "poc"
+                            ? "POC SYSTEM POLISH"
+                            : pitchStage === "mvp"
+                              ? "MVP FLEET BALANCER"
+                              : "SCALE COGNITIVE HUB"}
                         </span>
-                      )}
-                    </div>
-                    <h3 className="text-[18px] md:text-[20px] font-black text-white leading-none">
-                      Madrid System-Wide AI Polish & Load Re-balancer
-                    </h3>
+                        {systemOptimized && (
+                          <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-200/60 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            DYNAMIC ALLOCATION LIVE
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-[18px] md:text-[20px] font-bold text-slate-900 leading-none tracking-tight">
+                        Madrid System-Wide AI Polish & Load Re-balancer
+                      </h3>
 
-                    <p className="text-[12px] text-slate-300 leading-relaxed max-w-3xl">
-                      {pitchStage === "poc"
-                        ? "Optimizes the first-time delivery success rate by combining deep historical drop-off patterns with optional customer availability signals. Re-sequences stops by weighing active user inputs against empirical historic profiles, preventing inaccurate overrides when stated preferences conflict with verified past patterns."
-                        : pitchStage === "mvp"
-                          ? "Enhances the probability of first-time delivery success by cross-referencing active recipient signals with long-term delivery telemetry. Balances self-reported slots against historical sector success rates to resolve conflicting arrival signals."
-                          : "Self-healing logistic balancer designed to maximize first-time delivery success. Reconciles voluntary customer response slots with empirical neighborhood history through weighted scoring to ensure fleet routes optimize around proven presence patterns."}
-                    </p>
+                      <p className="text-[12px] text-slate-500 leading-relaxed max-w-3xl font-sans font-medium">
+                        {pitchStage === "poc"
+                          ? "Optimizes the first-time delivery success rate by combining deep historical drop-off patterns with optional customer availability signals. Re-sequences stops by weighing active user inputs against empirical historic profiles, preventing inaccurate overrides when stated preferences conflict with verified past patterns."
+                          : pitchStage === "mvp"
+                            ? "Enhances the probability of first-time delivery success by cross-referencing active recipient signals with long-term delivery telemetry. Balances self-reported slots against historical sector success rates to resolve conflicting arrival signals."
+                            : "Self-healing logistic balancer designed to maximize first-time delivery success. Reconciles voluntary customer response slots with empirical neighborhood history through weighted scoring to ensure fleet routes optimize around proven presence patterns."}
+                      </p>
+                    </div>
 
                     {/* Unified System Wide Progress/Telemetry Indicators for All Phases */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10 mt-4 text-[10px] font-mono text-slate-400">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-100 text-[10px] text-slate-500 font-sans">
                       <div>
-                        <div className="text-[8px] uppercase font-bold text-slate-500">
+                        <div className="text-[8px] uppercase font-bold tracking-wider text-slate-400">
                           System Sync Status
                         </div>
                         <div
-                          className={`text-[12px] font-black italic mt-1 ${systemOptimized ? "text-emerald-400" : "text-amber-400"}`}
+                          className={`text-[12px] font-bold mt-1 ${systemOptimized ? "text-emerald-600" : "text-amber-600"}`}
                         >
                           {systemOptimized
                             ? "OPTIMIZED & RESOLVED"
@@ -1493,20 +1489,20 @@ export function Dashboard({
                         </div>
                       </div>
                       <div>
-                        <div className="text-[8px] uppercase font-bold text-slate-500">
+                        <div className="text-[8px] uppercase font-bold tracking-wider text-slate-400">
                           Temporal Adjustments
                         </div>
-                        <div className="text-[12px] font-black mt-1 text-slate-200">
+                        <div className="text-[12px] font-bold mt-1 text-slate-700">
                           {systemOptimized
                             ? "Shifted to optimal presence slots"
                             : "Waiting for AI optimization"}
                         </div>
                       </div>
                       <div>
-                        <div className="text-[8px] uppercase font-bold text-slate-500">
+                        <div className="text-[8px] uppercase font-bold tracking-wider text-slate-400">
                           Fleet Re-allocations
                         </div>
-                        <div className="text-[12px] font-black mt-1 text-indigo-300 font-bold">
+                        <div className="text-[12px] font-bold mt-1 text-indigo-600 font-bold">
                           {systemOptimized
                             ? pitchStage === "poc"
                               ? "Balanced across Madrid sectors"
@@ -1515,10 +1511,10 @@ export function Dashboard({
                         </div>
                       </div>
                       <div>
-                        <div className="text-[8px] uppercase font-bold text-slate-500">
+                        <div className="text-[8px] uppercase font-bold tracking-wider text-slate-400">
                           Suggestions Solved
                         </div>
-                        <div className="text-[12px] font-black mt-1 text-emerald-400 font-bold">
+                        <div className="text-[12px] font-bold mt-1 text-emerald-600 font-bold">
                           {systemOptimized
                             ? "100% Solved (0 Pending)"
                             : "Active AI suggestions pending"}
@@ -1526,357 +1522,271 @@ export function Dashboard({
                       </div>
                     </div>
 
-                    {/* Madrid Grid Optimization Status (Unifying all phases on a lightweight, hyper-informative real-time grid of ALL 7 active routes) */}
-                    <div className="pt-4 space-y-4 select-none">
-                      <div className="text-[10px] uppercase font-black tracking-widest text-[#94A3B8] font-mono flex items-center justify-between">
-                        <span>
-                          Madrid Logistics Grid ({routes.length} Active
-                          Autonomous Sectors)
-                        </span>
-                        <span className="text-[9px] text-[#38BDF8] normal-case font-normal font-sans">
-                          Dynamic sequence state
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
-                        {routes.map((r) => {
-                          const isRouteOptimized =
-                            optimizedRoutes[r.routeId] || systemOptimized;
-                          const sectorInfo = getSectorIssue(r.routeId);
-
-                          return (
-                            <div
-                              key={r.routeId}
-                              className={cn(
-                                "p-2.5 rounded-xl border transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-[78px] text-left",
-                                isRouteOptimized
-                                  ? "bg-[#22C55E]/5 border-[#22C55E]/20"
-                                  : "bg-slate-900/40 border-white/5",
-                              )}
-                            >
-                              {isRouteOptimized && (
-                                <div className="absolute top-0 right-0 w-8 h-8 bg-[#22C55E]/5 rounded-full blur-md pointer-events-none" />
-                              )}
-
-                              <div className="flex items-center justify-between gap-1.5">
-                                <span className="text-[10px] font-black text-slate-300 font-mono tracking-tight leading-none bg-slate-800/80 px-1.5 py-0.5 rounded border border-white/5">
-                                  {MADRID_REAL_CODES[r.routeId] || r.routeId}
-                                </span>
-                                <span
-                                  className={cn(
-                                    "w-1.5 h-1.5 rounded-full shrink-0",
-                                    isRouteOptimized
-                                      ? "bg-[#22C55E]"
-                                      : "bg-amber-400 animate-pulse",
-                                  )}
-                                />
-                              </div>
-
-                              <div className="flex flex-col mt-2 pt-1.5 border-t border-white/5">
-                                <span className="text-[9.5px] font-black text-white leading-tight truncate">
-                                  {sectorInfo.label}
-                                </span>
-                                <span className="text-[8px] text-slate-400 font-medium truncate mt-0.5 leading-none">
-                                  {sectorInfo.office}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* Dedicated Spaced Diagnostics Feed Below Op Districts */}
-                      <div className="hidden bg-slate-950/25 rounded-2xl border border-white/5 p-4 space-y-3">
-                        <div className="text-[9px] uppercase font-black tracking-widest text-[#94A3B8] font-mono flex items-center justify-between">
-                          <span>Sector Diagnostics & Solutions</span>
-                          <span className="text-[8.5px] text-[#38BDF8] font-normal font-sans">
-                            Active feedback feed
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2.5">
-                          {routes.map((r) => {
-                            const isRouteOptimized =
-                              optimizedRoutes[r.routeId] || systemOptimized;
-                            const sectorInfo = getSectorIssue(r.routeId);
-
-                            return (
-                              <div
-                                key={r.routeId}
-                                className="flex items-start gap-3 py-1.5 border-b border-white/5 last:border-0 md:even:border-l md:even:border-white/5 md:even:pl-6"
-                              >
-                                <span
-                                  className={cn(
-                                    "text-[8.5px] font-mono font-black px-1.5 py-0.5 rounded shrink-0 w-[112px] text-center tracking-tight",
-                                    isRouteOptimized
-                                      ? "bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/15"
-                                      : "bg-amber-500/10 text-amber-300 border border-amber-500/15",
-                                  )}
-                                >
-                                  {r.routeId}
-                                </span>
-                                <div className="flex-1 text-[10.5px] leading-relaxed">
-                                  {isRouteOptimized ? (
-                                    <div className="text-slate-300">
-                                      <span className="text-[#22C55E] font-medium">
-                                        Resolved ➜{" "}
-                                      </span>
-                                      <span>{sectorInfo.solution}</span>
-                                    </div>
-                                  ) : (
-                                    <div className="text-slate-400">
-                                      <span className="text-amber-400 font-bold">
-                                        Risk ➜{" "}
-                                      </span>
-                                      <span>{sectorInfo.issue}</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Interactive Stage-Specific Highlights Underneath */}
+                    {/* Madrid Grid Optimization Status - Merged & Streamlined for Lean Design */}
+                    <div className="pt-4 space-y-4 select-none text-left">
+                      
+                      {/* Global Fleet Cap & Cost-benefit Status Bar (MVP / Full Only) */}
                       {(pitchStage === "mvp" || pitchStage === "scale") && (() => {
                         const activeTotal = getTotalVansInMadrid(systemOptimized, regionalTruckAdjustments);
                         return (
-                          <div className="pt-2 animate-in fade-in duration-300">
-                            <div className="bg-slate-950/40 p-4 rounded-2xl border border-white/5 space-y-4">
-                              {/* New Madrid-wide General Fleet Constraint Header Row */}
-                              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/40 border border-white/5">
-                                <div className="space-y-1 text-left">
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300 block font-mono">
-                                    Madrid-wide Global Fleet Cap & Cost-benefit
-                                  </span>
-                                  <p className="text-[10px] text-slate-400 leading-relaxed">
-                                    Control the total quantity of operational vans leased across all of Madrid. Each additional van costs <strong className="text-white">€150/day</strong>. Distributing the pool is bound strictly by this cap.
-                                  </p>
-                                  <div className="text-[10px] text-slate-500 font-mono flex flex-wrap gap-x-4 gap-y-1 pt-1">
-                                    <div>
-                                      Lease Rate: <span className="text-slate-300 font-bold">€150/day per van</span>
-                                    </div>
-                                    <div>
-                                      Daily Budget: <span className="text-white font-bold">€{(maxFleetLimit * 150).toLocaleString()} / day</span>
-                                    </div>
-                                    {maxFleetLimit > 30 && (
-                                      <div className="text-amber-400 font-bold">
-                                        (+€{((maxFleetLimit - 30) * 150).toLocaleString()}/day vs default)
-                                      </div>
-                                    )}
-                                    {maxFleetLimit < 30 && (
-                                      <div className="text-emerald-450 font-bold">
-                                        (-€{((30 - maxFleetLimit) * 150).toLocaleString()}/day saved)
-                                      </div>
-                                    )}
-                                    {maxFleetLimit === 30 && (
-                                      <div className="text-slate-400 italic">
-                                        (Standard baseline configuration)
-                                      </div>
-                                    )}
-                                  </div>
+                          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/60 animate-in fade-in duration-300">
+                            <div className="space-y-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 font-sans">
+                                  Madrid-wide Global Fleet Cap
+                                </span>
+                                <span className="text-[9px] text-slate-500 bg-white border border-slate-200 px-1.5 py-0.5 rounded font-mono">
+                                  Lease: €150/day per van
+                                </span>
+                              </div>
+                              <div className="text-[11px] text-slate-500 flex flex-wrap gap-x-4">
+                                <div>
+                                  Daily Budget: <span className="text-slate-800 font-semibold">€{(maxFleetLimit * 150).toLocaleString()} / day</span>
                                 </div>
-
-                                <div className="flex flex-wrap items-center gap-4 bg-slate-900/80 p-3 rounded-xl border border-white/5">
-                                  {/* General Fleet Controller */}
-                                  <div className="space-y-1 text-left">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block font-mono">
-                                      Global Fleet Limit
-                                    </span>
-                                    <div className="flex items-center gap-2">
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          if (maxFleetLimit <= activeTotal) {
-                                            showToastMsg(
-                                              "Cannot Decrease Cap",
-                                              `Active van deployment (${activeTotal}) is currently taking up all slots. Decrease a district capacity first to return a van.`,
-                                              "alert"
-                                            );
-                                            return;
-                                          }
-                                          if (maxFleetLimit <= 7) {
-                                            showToastMsg(
-                                              "Minimum Cap Reached",
-                                              "At least 7 vans are required (1 per district minimum setup).",
-                                              "alert"
-                                            );
-                                            return;
-                                          }
-                                          setMaxFleetLimit(prev => Math.max(7, prev - 1));
-                                          showToastMsg("Fleet Limit Decreased", `Scaled global Madrid fleet down to ${maxFleetLimit - 1} vans. Reduced overhead cost projection.`, "success");
-                                        }}
-                                        disabled={maxFleetLimit <= activeTotal || maxFleetLimit <= 7}
-                                        className={cn(
-                                          "w-7 h-7 flex items-center justify-center bg-slate-800 border border-white/10 text-slate-200 rounded-lg hover:bg-slate-700 active:scale-95 transition-all cursor-pointer font-black text-sm",
-                                          (maxFleetLimit <= activeTotal || maxFleetLimit <= 7) && "opacity-40 cursor-not-allowed hover:bg-slate-800 active:scale-100"
-                                        )}
-                                        title={maxFleetLimit <= activeTotal ? "Free up a van from a district first" : "Decrease fleet cap"}
-                                      >
-                                        -
-                                      </button>
-                                      
-                                      <div className="px-2 py-1 font-mono text-center min-w-[65px]">
-                                        <div className="text-[13px] font-black text-indigo-400 leading-none">
-                                          {maxFleetLimit}
-                                        </div>
-                                        <span className="text-[8px] text-slate-400 block mt-0.5">Vans Max</span>
-                                      </div>
-
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          if (maxFleetLimit >= 50) {
-                                            showToastMsg(
-                                              "Maximum Cap Reached",
-                                              "Maximum simulation cap is 50 vans to prevent depot bottlenecks.",
-                                              "alert"
-                                            );
-                                            return;
-                                          }
-                                          setMaxFleetLimit(prev => Math.min(50, prev + 1));
-                                          showToastMsg("Fleet Limit Increased", `Scaled global Madrid fleet up to ${maxFleetLimit + 1} vans. Daily cost adjusts by +€150.`, "success");
-                                        }}
-                                        disabled={maxFleetLimit >= 50}
-                                        className={cn(
-                                          "w-7 h-7 flex items-center justify-center bg-slate-800 border border-white/10 text-slate-200 rounded-lg hover:bg-slate-700 active:scale-95 transition-all cursor-pointer font-black text-sm",
-                                          maxFleetLimit >= 50 && "opacity-40 cursor-not-allowed hover:bg-slate-800 active:scale-100"
-                                        )}
-                                        title="Increase fleet cap (+€150/day cost)"
-                                      >
-                                        +
-                                      </button>
-                                    </div>
+                                {maxFleetLimit > 30 && (
+                                  <div className="text-amber-600 font-semibold">
+                                    (+€{((maxFleetLimit - 30) * 150).toLocaleString()}/day vs default)
                                   </div>
-
-                                  {/* Pool Status Visual */}
-                                  <div className="w-[1px] h-10 bg-white/5 hidden sm:block" />
-
-                                  <div className="space-y-1 min-w-[110px] text-left">
-                                    <div className="flex justify-between items-center text-[9px] font-mono gap-4 text-slate-400 uppercase tracking-widest">
-                                      <span>Active Deployment</span>
-                                    </div>
-                                    <div className="font-mono text-[11px] font-bold text-slate-200 flex items-baseline gap-1">
-                                      <span className="text-white text-[13px]">{activeTotal}</span>
-                                      <span className="text-slate-500">of</span>
-                                      <span className="text-indigo-400">{maxFleetLimit}</span>
-                                      <span className="text-slate-500 text-[9px] font-normal">Active</span>
-                                    </div>
-                                    <div className="w-24 bg-slate-950/60 p-0.5 rounded-full border border-white/5 overflow-hidden mt-1">
-                                      <div 
-                                        className={cn(
-                                          "h-1 rounded-full transition-all duration-300",
-                                          activeTotal >= maxFleetLimit ? "bg-amber-500" : "bg-indigo-500"
-                                        )}
-                                        style={{ width: `${Math.min(100, (activeTotal / maxFleetLimit) * 100)}%` }}
-                                      />
-                                    </div>
+                                )}
+                                {maxFleetLimit < 30 && (
+                                  <div className="text-emerald-600 font-semibold">
+                                    (-€{((30 - maxFleetLimit) * 150).toLocaleString()}/day saved)
                                   </div>
-                                </div>
+                                )}
+                                {maxFleetLimit === 30 && (
+                                  <div className="text-slate-400 italic font-medium">
+                                    (Standard baseline configuration)
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
+                              {/* Compact adjuster */}
+                              <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200">
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 font-sans px-1">
+                                  Limit:
+                                </span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (maxFleetLimit <= activeTotal) {
+                                      showToastMsg(
+                                        "Cannot Decrease Cap",
+                                        `Active van deployment (${activeTotal}) is currently taking up all slots. Decrease a district capacity first to return a van.`,
+                                        "alert"
+                                      );
+                                      return;
+                                    }
+                                    if (maxFleetLimit <= 7) {
+                                      showToastMsg(
+                                        "Minimum Cap Reached",
+                                        "At least 7 vans are required (1 per district minimum setup).",
+                                        "alert"
+                                      );
+                                      return;
+                                    }
+                                    setMaxFleetLimit(prev => Math.max(7, prev - 1));
+                                    showToastMsg("Fleet Limit Decreased", `Scaled global Madrid fleet down to ${maxFleetLimit - 1} vans. Reduced overhead cost projection.`, "success");
+                                  }}
+                                  disabled={maxFleetLimit <= activeTotal || maxFleetLimit <= 7}
+                                  className={cn(
+                                    "w-6 h-6 flex items-center justify-center bg-slate-50 border border-slate-200 text-slate-600 rounded hover:bg-slate-100 active:scale-95 transition-all cursor-pointer font-bold text-xs",
+                                    (maxFleetLimit <= activeTotal || maxFleetLimit <= 7) && "opacity-45 cursor-not-allowed hover:bg-slate-50 active:scale-100"
+                                  )}
+                                >
+                                  -
+                                </button>
+                                <span className="font-mono text-[12px] font-bold text-indigo-600 min-w-[20px] text-center">
+                                  {maxFleetLimit}
+                                </span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (maxFleetLimit >= 50) {
+                                      showToastMsg(
+                                        "Maximum Cap Reached",
+                                        "Maximum simulation cap is 50 vans to prevent depot bottlenecks.",
+                                        "alert"
+                                      );
+                                      return;
+                                    }
+                                    setMaxFleetLimit(prev => Math.min(50, prev + 1));
+                                    showToastMsg("Fleet Limit Increased", `Scaled global Madrid fleet up to ${maxFleetLimit + 1} vans. Daily cost adjusts by +€150.`, "success");
+                                  }}
+                                  disabled={maxFleetLimit >= 50}
+                                  className={cn(
+                                    "w-6 h-6 flex items-center justify-center bg-slate-50 border border-slate-200 text-slate-600 rounded hover:bg-slate-100 active:scale-95 transition-all cursor-pointer font-bold text-xs",
+                                    maxFleetLimit >= 50 && "opacity-45 cursor-not-allowed hover:bg-slate-50 active:scale-100"
+                                  )}
+                                >
+                                  +
+                                </button>
                               </div>
 
-                              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-                                {routes.map((r) => {
-                                  const routeId = r.routeId;
-                                  const baseStandard = STANDARD_VANS[routeId] || 4;
-                                  let optAdj = 0;
-                                  if (systemOptimized) {
-                                    if (routeId === "MAD-CENTRAL-B2") optAdj = 1;
-                                    else if (routeId === "MAD-NORTH-A1") optAdj = -1;
-                                  }
-                                  const manualAdj = regionalTruckAdjustments[routeId] || 0;
-                                  const currentVans = Math.max(1, baseStandard + optAdj + manualAdj);
-                                  const netChange = currentVans - baseStandard;
-
-                                  let statusLabel = "Usual";
-                                  let textColorClass = "text-slate-300";
-                                  if (netChange > 0) {
-                                    statusLabel = `+${netChange} Increased`;
-                                    textColorClass = "text-emerald-450 font-bold";
-                                  } else if (netChange < 0) {
-                                    statusLabel = `-${Math.abs(netChange)} Decreased`;
-                                    textColorClass = "text-rose-400 font-bold";
-                                  } else {
-                                    statusLabel = "Standard";
-                                    textColorClass = "text-slate-400";
-                                  }
-
-                                  return (
-                                    <div key={routeId} className="flex flex-col justify-between bg-slate-900/60 p-2.5 rounded-xl border border-white/5 text-[10px] font-mono text-slate-300 min-h-[105px] text-left">
-                                      <div>
-                                        <span className="font-bold text-indigo-400 text-[10px] block truncate font-mono" title={routeId}>
-                                          {MADRID_REAL_CODES[routeId] || routeId}
-                                        </span>
-                                        <span className="text-[7.5px] text-slate-500 block truncate leading-none mb-1">
-                                          {MADRID_REAL_OPERATORS[routeId] || "Fleet"}
-                                        </span>
-                                        <span className={cn("mt-1 text-[11px] block truncate", textColorClass)}>
-                                          {currentVans} Vans
-                                        </span>
-                                        <div className="text-[8px] text-slate-500 mt-0.5 space-y-0.5 leading-none">
-                                          <div>{statusLabel}</div>
-                                          <div>Usual: {baseStandard}</div>
-                                        </div>
-                                      </div>
-
-                                      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-white/5">
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleAdjustTrucks(routeId, -1);
-                                          }}
-                                          disabled={currentVans <= 1}
-                                          className={cn(
-                                            "w-5 h-5 flex items-center justify-center bg-slate-800 border border-white/10 text-slate-300 rounded hover:bg-slate-700 active:scale-95 transition-all cursor-pointer font-black text-xs leading-none",
-                                            currentVans <= 1 && "opacity-40 cursor-not-allowed hover:bg-slate-800 active:scale-100"
-                                          )}
-                                          title="De-allocate 1 van"
-                                        >
-                                          -
-                                        </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleAdjustTrucks(routeId, 1);
-                                          }}
-                                          disabled={currentVans >= 12 || activeTotal >= maxFleetLimit}
-                                          className={cn(
-                                            "w-5 h-5 flex items-center justify-center bg-slate-800 border border-white/10 text-slate-300 rounded hover:bg-slate-700 active:scale-95 transition-all cursor-pointer font-black text-xs leading-none",
-                                            (currentVans >= 12 || activeTotal >= maxFleetLimit) && "opacity-40 cursor-not-allowed hover:bg-slate-800 active:scale-100"
-                                          )}
-                                          title="Allocate 1 van"
-                                        >
-                                          +
-                                        </button>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
+                              {/* Compact status pool progress bar */}
+                              <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 font-mono text-[10px]">
+                                <span className="text-slate-400 uppercase tracking-wider text-[9px] font-sans">Deployed:</span>
+                                <span className="text-slate-800 font-bold">{activeTotal}</span>
+                                <span className="text-slate-400">/</span>
+                                <span className="text-indigo-600 font-bold">{maxFleetLimit}</span>
+                                <div className="w-12 bg-slate-100 p-0.5 rounded-full border border-slate-200 overflow-hidden">
+                                  <div 
+                                    className={cn(
+                                      "h-1 rounded-full transition-all duration-300",
+                                      activeTotal >= maxFleetLimit ? "bg-amber-500" : "bg-indigo-600"
+                                    )}
+                                    style={{ width: `${Math.min(100, (activeTotal / maxFleetLimit) * 100)}%` }}
+                                  />
+                                </div>
                               </div>
                             </div>
                           </div>
                         );
                       })()}
 
+                      <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 font-mono flex items-center justify-between">
+                        <span>
+                          Madrid Logistics Grid ({routes.length} Active Autonomous Sectors)
+                        </span>
+                        <span className="text-[9px] text-indigo-500 normal-case font-normal font-sans">
+                          Dynamic sequence state
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+                        {routes.map((r) => {
+                          const isRouteOptimized = optimizedRoutes[r.routeId] || systemOptimized;
+                          const sectorInfo = getSectorIssue(r.routeId);
+
+                          const routeId = r.routeId;
+                          const baseStandard = STANDARD_VANS[routeId] || 4;
+                          let optAdj = 0;
+                          if (systemOptimized) {
+                            if (routeId === "MAD-CENTRAL-B2") optAdj = 1;
+                            else if (routeId === "MAD-NORTH-A1") optAdj = -1;
+                          }
+                          const activeTotal = getTotalVansInMadrid(systemOptimized, regionalTruckAdjustments);
+                          const manualAdj = regionalTruckAdjustments[routeId] || 0;
+                          const currentVans = Math.max(1, baseStandard + optAdj + manualAdj);
+                          const netChange = currentVans - baseStandard;
+
+                          let statusLabel = "Usual";
+                          let textColorClass = "text-slate-400";
+                          if (netChange > 0) {
+                            statusLabel = `+${netChange}`;
+                            textColorClass = "text-emerald-600 font-semibold";
+                          } else if (netChange < 0) {
+                            statusLabel = `-${Math.abs(netChange)}`;
+                            textColorClass = "text-rose-600 font-semibold";
+                          }
+
+                          return (
+                            <div
+                              key={r.routeId}
+                              className={cn(
+                                "p-3 rounded-2xl border transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-[124px] text-left",
+                                isRouteOptimized
+                                  ? "bg-emerald-50/50 border-emerald-200/70 shadow-sm"
+                                  : "bg-slate-50/50 border-slate-200/80 hover:border-slate-300",
+                              )}
+                            >
+                              <div className="flex items-center justify-between gap-1.5">
+                                <span className="text-[9px] font-bold text-slate-500 font-mono tracking-tight leading-none bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                                  {MADRID_REAL_CODES[r.routeId] || r.routeId}
+                                </span>
+                                <span
+                                  className={cn(
+                                    "w-1.5 h-1.5 rounded-full shrink-0",
+                                    isRouteOptimized
+                                      ? "bg-emerald-500"
+                                      : "bg-amber-400 animate-pulse",
+                                  )}
+                                />
+                              </div>
+
+                              <div className="flex flex-col mt-2">
+                                <span className="text-[10px] font-bold text-slate-800 leading-tight truncate">
+                                  {sectorInfo.label}
+                                </span>
+                                <span className="text-[8px] text-slate-400 font-medium truncate mt-0.5 leading-none">
+                                  {sectorInfo.office}
+                                </span>
+                              </div>
+
+                              {/* Unified inline Fleet Controls */}
+                              {pitchStage === "poc" ? (
+                                <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[8px] font-mono text-slate-400">
+                                  <span>Baseline</span>
+                                  <span className="text-slate-600 font-semibold">{currentVans} Vans</span>
+                                </div>
+                              ) : (
+                                <div className="mt-3 pt-2 border-t border-slate-100 space-y-1">
+                                  <div className="flex items-center justify-between text-[9px] font-sans">
+                                    <span className="text-slate-400">Capacity</span>
+                                    <span className={cn("font-semibold text-slate-700", netChange !== 0 && "text-indigo-600")}>
+                                      {currentVans} Vans
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <span className={cn("text-[8.5px] font-mono", netChange !== 0 ? textColorClass : "text-slate-400")}>
+                                      {netChange === 0 ? "Standard" : `Adj: ${statusLabel}`}
+                                    </span>
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleAdjustTrucks(routeId, -1);
+                                        }}
+                                        disabled={currentVans <= 1}
+                                        className={cn(
+                                          "w-4.5 h-4.5 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded hover:bg-slate-50 active:scale-95 transition-all cursor-pointer font-bold text-[10px] leading-none",
+                                          currentVans <= 1 && "opacity-30 cursor-not-allowed hover:bg-white active:scale-100"
+                                        )}
+                                        title="De-allocate 1 van"
+                                      >
+                                        -
+                                      </button>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleAdjustTrucks(routeId, 1);
+                                        }}
+                                        disabled={currentVans >= 12 || activeTotal >= maxFleetLimit}
+                                        className={cn(
+                                          "w-4.5 h-4.5 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded hover:bg-slate-50 active:scale-95 transition-all cursor-pointer font-bold text-[10px] leading-none",
+                                          (currentVans >= 12 || activeTotal >= maxFleetLimit) && "opacity-30 cursor-not-allowed hover:bg-white active:scale-100"
+                                        )}
+                                        title="Allocate 1 van"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
 
                     </div>
                   </div>
 
-                  <div className="shrink-0 w-full md:w-auto flex flex-col items-center justify-center md:self-center">
+                  <div className="shrink-0 w-full lg:w-auto flex flex-col items-center justify-center lg:self-center mt-4 lg:mt-0">
                     {isOptimizingSystem ? (
-                      <div className="flex flex-col items-center justify-center p-4 bg-slate-900 rounded-2xl border border-indigo-900 w-56 text-center space-y-3">
-                        <RotateCw className="w-6 h-6 text-indigo-400 animate-spin" />
-                        <div className="text-[11px] font-mono text-slate-300">
+                      <div className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-200 w-56 text-center space-y-3">
+                        <RotateCw className="w-5 h-5 text-indigo-500 animate-spin" />
+                        <div className="text-[11px] font-mono text-slate-600">
                           {systemOpStep === 1 && "Analyzing road friction..."}
                           {systemOpStep === 2 &&
                             "Migrating 3 courier assets..."}
                           {systemOpStep === 3 &&
                             "Broadcasting local schedules..."}
                         </div>
-                        <div className="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                        <div className="w-full bg-slate-200 h-1 rounded-full overflow-hidden">
                           <div
-                            className="bg-indigo-550 h-full animate-pulse bg-indigo-500"
+                            className="bg-indigo-600 h-full animate-pulse"
                             style={{
                               width:
                                 systemOpStep === 1
@@ -1892,10 +1802,10 @@ export function Dashboard({
                       <button
                         onClick={handleSystemWideOptimize}
                         className={cn(
-                          "py-3 px-6 rounded-2xl text-[10px] md:text-[11px] font-black tracking-widest uppercase transition-all shadow-xl cursor-pointer w-full md:w-64 min-h-[48px] flex items-center justify-center gap-2 border",
+                          "py-3 px-6 rounded-2xl text-[10px] md:text-[11px] font-bold tracking-wider uppercase transition-all shadow-sm cursor-pointer w-full lg:w-56 min-h-[48px] flex items-center justify-center gap-2 border",
                           systemOptimized
-                            ? "bg-rose-950 hover:bg-rose-900 text-rose-300 border-rose-800"
-                            : "bg-blue-600 hover:bg-blue-500 text-white border-blue-500 shadow-blue-500/10",
+                            ? "bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200"
+                            : "bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-500 shadow-md shadow-indigo-100",
                         )}
                       >
                         <Zap
@@ -1910,7 +1820,7 @@ export function Dashboard({
                             ? "System AI Polish"
                             : pitchStage === "mvp"
                               ? "Run Load Balancing"
-                              : "De-congest Madrid Grid"}
+                              : "De-congest Grid"}
                       </button>
                     )}
                   </div>
@@ -2679,14 +2589,16 @@ export function Dashboard({
                                         </div>
                                       </div>
                                       <div className="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 sm:border-l border-slate-100 pt-3 sm:pt-0 sm:pl-8 text-right">
-                                        <div className="text-[20px] font-black text-slate-900 leading-none">
-                                          {Math.round(
-                                            d.predictedProbability * 100,
-                                          )}
-                                          %
-                                        </div>
-                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 text-right italic">
-                                          Reliability
+                                        <div className="flex flex-col items-end">
+                                          <div className="text-[20px] font-black leading-none text-slate-900">
+                                            {Math.round(
+                                              d.predictedProbability * 100,
+                                            )}
+                                            %
+                                          </div>
+                                          <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 text-right italic">
+                                            Reliability
+                                          </div>
                                         </div>
                                       </div>
                                     </motion.div>
